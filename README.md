@@ -1,48 +1,74 @@
 <p align="center">
-  <img src="assets/banner.svg" alt="animated banner" width="100%"/>
+  <img src="assets/synthwave.svg" alt="synthwave banner" width="100%"/>
 </p>
 
 # github-readme-svg
 
-GitHub 프로필/저장소 README에 넣을 **애니메이션 SVG 배너** 생성기입니다.
+**English** | [한국어](README.ko.md)
 
-- 그라디언트가 계속 바뀌는 타이틀
-- 여러 문구를 번갈아 타이핑하고 지우는 효과 (커서 포함)
-- 반짝이는 별, 떠다니는 원, 흘러가는 물결
-- JavaScript 없이 CSS 애니메이션과 SMIL만 써서 GitHub에서 그대로 재생됨
-- `prefers-reduced-motion` 설정을 따름
+A generator for **animated SVG banners** to put in your GitHub profile or repository README.
+No JavaScript: it uses only CSS animations and SMIL, so the banners play as-is on GitHub.
+All styles respect `prefers-reduced-motion`.
 
-## 사용법 (Nix)
+## Styles
+
+### `synthwave`
+A neon title that draws its own outline, then lights up and flickers. Behind it are a retro striped sun and a perspective grid that scrolls toward you.
+
+<img src="assets/synthwave.svg" width="100%"/>
+
+### `matrix`
+Falling code rain at several depths, a title with RGB-split glitches, and a typewriter subtitle.
+
+<img src="assets/matrix.svg" width="100%"/>
+
+### `orbit`
+Your tech stack orbits your name in 3D-style ellipses, with tags shrinking and dimming as they pass behind. A pulsing core sits in the centre.
+
+<img src="assets/orbit.svg" width="100%"/>
+
+### `banner`
+A gradient title, a typewriter effect that types and erases several lines in turn, twinkling stars, floating orbs and flowing waves.
+
+<img src="assets/banner.svg" width="100%"/>
+
+## Usage (Nix)
 
 ```sh
-# 바로 실행
-nix run . -- --name "Hi, I'm Jihoo" \
-  --line "Welcome to my GitHub!" \
-  --line "I love building cool stuff" \
-  --theme aurora \
-  --out assets/banner.svg
+# Generate every style into assets/
+nix run . -- --style all --name "Hi, I'm Jihoo"
 
-# 개발 셸 (python3 + rsvg-convert)
+# A single style
+nix run . -- --style orbit --name "Jihoo" \
+  --line "Full-stack tinkerer" \
+  --tag Python --tag Nix --tag Rust --tag Linux
+
+nix run . -- --style matrix \
+  --line "Welcome to my GitHub!" --line "I love building cool stuff"
+
+# Dev shell (python3 + rsvg-convert)
 nix develop
 python3 generate.py --help
 ```
 
-| 옵션 | 설명 | 기본값 |
+| Option | Description | Default |
 |---|---|---|
-| `--name` | 큰 타이틀 | `Hi, I'm Jihoo` |
-| `--line` | 타이핑될 문구 (여러 번 지정 가능) | 예시 문구 3개 |
-| `--theme` | `aurora` · `sunset` · `ocean` | `aurora` |
-| `--seed` | 별 배치 랜덤 시드 | `42` |
-| `--out` | 출력 경로 | `assets/banner.svg` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `all` | `banner` |
+| `--name` | Large title | `Hi, I'm Jihoo` |
+| `--line` | Subtitle lines, repeatable (`banner`/`matrix` type all of them; `synthwave`/`orbit` use the first) | 3 sample lines |
+| `--tag` | Tags orbiting in the `orbit` style, repeatable | Python, Nix, Linux, … |
+| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`) | `aurora` |
+| `--seed` | Random seed for stars / code rain | `42` |
+| `--out` | Output path (single style only) | `assets/<style>.svg` |
 
-## README에 넣기
+## Adding it to your README
 
-생성한 SVG를 저장소에 커밋한 뒤 README에 다음을 넣으세요.
+Commit the generated SVG to your repository, then add this to your README:
 
 ```html
 <p align="center">
-  <img src="assets/banner.svg" alt="banner" width="100%"/>
+  <img src="assets/synthwave.svg" alt="banner" width="100%"/>
 </p>
 ```
 
-> `--line` 문구는 고정폭 글꼴 기준으로 폭을 추정합니다. 영문이 가장 정확하고, 한글도 대략 맞습니다.
+> Text width for `--line` and `--tag` is estimated from the font size. It is most accurate for English text; Korean and other wide characters are approximate.

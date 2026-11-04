@@ -14,44 +14,26 @@ Examples:
 from __future__ import annotations
 
 import argparse
-import html
 import random
 from pathlib import Path
 
 import contrib
+import creative
+from common import MONO, SANS, THEMES, esc
+from common import stars as _stars
+from common import text_width as _text_width
 
 WIDTH = 900
 HEIGHT = 260
 FONT_SIZE = 22
 CHAR_W = FONT_SIZE * 0.6  # approximate monospace glyph width
 
-THEMES = {
-    "aurora": ("#0d1117", ["#7f5af0", "#2cb67d", "#3da9fc"]),
-    "sunset": ("#1a1023", ["#ff6b6b", "#feca57", "#ff9ff3"]),
-    "ocean": ("#03122b", ["#00d2ff", "#3a7bd5", "#48dbfb"]),
-}
-
-
-def esc(s: str) -> str:
-    return html.escape(s, quote=True)
-
-
 def text_width(s: str) -> float:
-    # count wide characters (Hangul, emoji, ...) as roughly two cells
-    return sum(CHAR_W * (2 if ord(c) > 0x1100 else 1) for c in s)
+    return _text_width(s, FONT_SIZE)
 
 
 def stars(n: int, rng: random.Random, w: float = WIDTH, h: float = HEIGHT * 0.75) -> str:
-    out = []
-    for i in range(n):
-        x, y = rng.uniform(0, w), rng.uniform(0, h)
-        r = rng.uniform(0.6, 1.8)
-        dur, delay = rng.uniform(2, 5), rng.uniform(0, 5)
-        out.append(
-            f'<circle class="star" cx="{x:.1f}" cy="{y:.1f}" r="{r:.2f}" '
-            f'style="animation-duration:{dur:.2f}s;animation-delay:-{delay:.2f}s"/>'
-        )
-    return "\n    ".join(out)
+    return _stars(n, rng, w, h)
 
 
 def wave_path(amp: float, base: float, wavelength: float) -> str:
@@ -178,10 +160,6 @@ def build_banner(name: str, lines: list[str], tags: list[str], theme: str, seed:
   {typing}
 </svg>
 """
-
-
-SANS = "'Segoe UI', Ubuntu, 'Helvetica Neue', Arial, sans-serif"
-MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monospace"
 
 
 def build_synthwave(name: str, lines: list[str], tags: list[str], theme: str, seed: int) -> str:
@@ -460,13 +438,14 @@ STYLES = {
     "synthwave": build_synthwave,
     "matrix": build_matrix,
     "orbit": build_orbit,
+    **creative.STYLES,
 }
 
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--style", choices=[*STYLES, *contrib.STYLES, "all"], default="banner",
-                   help="banner | synthwave | matrix | orbit | contrib-grid | contrib-city | all")
+                   help=" | ".join([*STYLES, *contrib.STYLES, "all"]))
     p.add_argument("--name", default="Hi, I'm Jihoo")
     p.add_argument("--line", action="append", dest="lines",
                    help="subtitle line, repeatable (synthwave/orbit use only the first)")

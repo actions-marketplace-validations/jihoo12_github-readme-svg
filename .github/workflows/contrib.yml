@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
   push:
     branches: [main]
-    paths: ["generate.py", "contrib.py", "flake.nix", "flake.lock"]
+    paths: ["generate.py", "contrib.py", "common.py", "flake.nix", "flake.lock"]
 
 permissions:
   contents: write
@@ -25,6 +25,8 @@ jobs:
         run: |
           nix run . -- --style contrib-grid --user "${{ github.repository_owner }}"
           nix run . -- --style contrib-city --user "${{ github.repository_owner }}"
+          nix run . -- --style contrib-galaxy --user "${{ github.repository_owner }}"
+          nix run . -- --style contrib-heartbeat --user "${{ github.repository_owner }}"
       - name: Commit if changed
         run: |
           git config user.name "github-actions[bot]"

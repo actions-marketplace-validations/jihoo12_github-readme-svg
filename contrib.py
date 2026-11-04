@@ -8,6 +8,7 @@ from __future__ import annotations
 import datetime as dt
 import html
 import math
+import random
 import re
 import urllib.request
 from dataclasses import dataclass
@@ -376,4 +377,239 @@ def build_city(cal: Calendar, palette: str) -> str:
 """
 
 
-STYLES = {"contrib-grid": build_grid, "contrib-city": build_city}
+# ---------------------------------------------------------------- style 3: spiral galaxy
+
+def build_galaxy(cal: Calendar, palette: str) -> str:
+    """Every day is a star on the arms of a slowly turning spiral galaxy; today sits at the core."""
+    bg, empty, levels = PALETTES[palette]
+    W, H = 900, 400
+    cx, cy = W / 2, 262
+    tilt = 0.4
+    R0, R1 = 34, 400
+    cycle = 14.0
+    spin = 160
+    rng = random.Random(len(cal.days) + cal.total)
+    n = len(cal.days)
+    peak = max(1, cal.best.count)
+    top = {id(d) for d in sorted(cal.days, key=lambda d: -d.count)[:6] if d.count}
+
+    stars, dust = [], []
+    for i, d in enumerate(cal.days):
+        age = 1 - i / max(1, n - 1)            # 1 = a year ago (outer rim), 0 = today (core)
+        arm = i % 2
+        r = R0 + (R1 - R0) * age ** 0.9 + rng.gauss(0, 4 + 7 * age)
+        th = arm * math.pi + age * 2.6 * math.pi + rng.gauss(0, 0.055)
+        x, y = r * math.cos(th), r * math.sin(th)
+        delay = (1 - age) * 3.2
+        if not d.count:
+            dust.append(f'<circle cx="{x:.1f}" cy="{y:.1f}" r="{rng.uniform(.8, 1.5):.1f}" class="dust"/>')
+            continue
+        k = math.sqrt(d.count / peak)
+        rad = 1.6 + 3.4 * k
+        color = levels[d.level - 1]
+        spikes = ""
+        if id(d) in top:
+            L = rad * 4.5
+            spikes = (f'<path d="M{-L:.1f} 0H{L:.1f}M0 {-L:.1f}V{L:.1f}" stroke="{levels[3]}" stroke-width=".9" '
+                      f'stroke-linecap="round" opacity=".9"/>')
+        stars.append(
+            f'<g transform="translate({x:.1f} {y:.1f})"><g class="cr"><g transform="scale(1 {1 / tilt:.3f})">'
+            f'<g class="star" style="animation-delay:{delay:.2f}s"><title>{d.count} on {d.date}</title>'
+            f'<circle r="{rad * 2.6:.1f}" fill="url(#halo{d.level})"/>{spikes}'
+            f'<circle r="{rad * 0.55:.2f}" fill="{shade(color, 1.5)}"/></g></g></g></g>'
+        )
+    halos = "".join(
+        f'<radialGradient id="halo{i + 1}"><stop offset="0" stop-color="{c}" stop-opacity=".95"/>'
+        f'<stop offset=".35" stop-color="{c}" stop-opacity=".35"/><stop offset="1" stop-color="{c}" stop-opacity="0"/></radialGradient>'
+        for i, c in enumerate(levels)
+    )
+    bgstars = "".join(
+        f'<circle cx="{rng.uniform(0, W):.0f}" cy="{rng.uniform(0, H):.0f}" r="{rng.uniform(.3, 1):.1f}" class="bg" '
+        f'style="animation-delay:-{rng.uniform(0, 4):.1f}s"/>'
+        for _ in range(90)
+    )
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="{esc(cal.user)} contributions galaxy">
+  <title>{esc(cal.user)}'s GitHub contributions as a galaxy</title>
+  <defs>
+    {halos}
+    <radialGradient id="core">
+      <stop offset="0" stop-color="#fff" stop-opacity=".95"/><stop offset=".12" stop-color="{levels[3]}" stop-opacity=".7"/>
+      <stop offset=".45" stop-color="{levels[1]}" stop-opacity=".22"/><stop offset="1" stop-color="{levels[0]}" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="neb" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="30"/></filter>
+    <clipPath id="frame"><rect width="{W}" height="{H}" rx="14"/></clipPath>
+  </defs>
+  <style>{BASE_CSS}
+    .bg    {{ fill: #fff; opacity: .4; animation: tw 4s ease-in-out infinite; }}
+    .dust  {{ fill: {empty}; fill-opacity: 1; stroke: #fff; stroke-opacity: .12; stroke-width: .5; }}
+    .spin  {{ animation: spin {spin}s linear infinite; }}
+    .cr    {{ animation: spin {spin}s linear infinite reverse; }}
+    .star  {{ animation: ignite {cycle}s cubic-bezier(.2,.8,.2,1) infinite both; }}
+    .pulse {{ animation: pulse 5s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }}
+    @keyframes spin   {{ to {{ transform: rotate(360deg); }} }}
+    @keyframes tw     {{ 0%,100% {{ opacity: .15; }} 50% {{ opacity: .7; }} }}
+    @keyframes pulse  {{ 0%,100% {{ transform: scale(1); opacity: .9; }} 50% {{ transform: scale(1.12); opacity: 1; }} }}
+    @keyframes ignite {{
+      0% {{ transform: scale(0); opacity: 0; }}
+      3% {{ transform: scale(1.9); opacity: 1; }}
+      7%, 86% {{ transform: scale(1); opacity: 1; }}
+      93%, 100% {{ transform: scale(0); opacity: 0; }}
+    }}
+    @media (prefers-reduced-motion: reduce) {{ * {{ animation: none !important; }} text[opacity="0"] {{ display: none; }} }}
+  </style>
+  <g clip-path="url(#frame)">
+    <rect width="{W}" height="{H}" fill="{bg}"/>
+    {bgstars}
+    <ellipse cx="{cx}" cy="{cy}" rx="300" ry="90" fill="{levels[0]}" opacity=".35" filter="url(#neb)"/>
+    <g transform="translate({cx} {cy}) scale(1 {tilt})">
+      <g class="spin">
+        {"".join(dust)}
+        {"".join(stars)}
+      </g>
+    </g>
+    <ellipse class="pulse" cx="{cx}" cy="{cy}" rx="80" ry="40" fill="url(#core)"/>
+    <text x="40" y="38" class="title">@{esc(cal.user)}</text>
+    <text x="{40 + 12 * (len(cal.user) + 1) + 10}" y="38" class="sub">a year of contributions, spiralling into today</text>
+    {stat_cards(cal, 40, 54, W - 80, cycle, levels[2])}
+  </g>
+</svg>
+"""
+
+
+# ---------------------------------------------------------------- style 4: heartbeat monitor
+
+def build_heartbeat(cal: Calendar, palette: str) -> str:
+    """A patient monitor: every week of the year is one heartbeat, its spike as tall as that week's work."""
+    bg, empty, levels = PALETTES[palette]
+    W, H = 900, 330
+    x0, x1 = 34, 606
+    base = 236
+    amp = 118
+    sweep = 9.0
+    trace = levels[3]
+
+    weeks: dict[int, int] = {}
+    starts: dict[int, dt.date] = {}
+    for d in cal.days:
+        w, _ = grid_pos(cal, d)
+        weeks[w] = weeks.get(w, 0) + d.count
+        starts.setdefault(w, d.date)
+    nweeks = max(weeks) + 1
+    peak = max(1, max(weeks.values()))
+    pw = (x1 - x0) / nweeks
+
+    pts = [(x0, base)]
+    for w in range(nweeks):
+        a = math.sqrt(weeks.get(w, 0) / peak)
+        bx = x0 + w * pw
+        if a == 0:
+            pts.append((bx + pw, base))  # flatline
+            continue
+        shape = [(.14, 0), (.22, -.05 - .05 * a), (.3, 0), (.38, .1 * a), (.46, -1.0 * a), (.54, .28 * a),
+                 (.6, 0), (.72, -.08 - .12 * a), (.84, 0), (1, 0)]
+        pts += [(bx + pw * fx, base + amp * fy) for fx, fy in shape]
+    d_path = "M" + " L".join(f"{x:.2f} {y:.2f}" for x, y in pts)
+
+    # map time -> x linearly, like a real monitor sweep, via keyPoints by path length
+    cum = [0.0]
+    for a, b in zip(pts, pts[1:]):
+        cum.append(cum[-1] + math.dist(a, b))
+    total = cum[-1]
+    kt = ";".join(f"{(x - x0) / (x1 - x0):.5f}" for x, _ in pts)
+    kp = ";".join(f"{c / total:.5f}" for c in cum)
+    tail = 160.0
+    dash_vals = ";".join(f"{tail - c:.1f}" for c in cum)
+
+    months, last = [], None
+    for w in range(nweeks):
+        dd = starts.get(w)
+        if dd and dd.month != last and dd.day <= 7:
+            months.append(f'<text x="{x0 + w * pw:.1f}" y="{base + 62}" class="axis">{dd:%b}</text>')
+            last = dd.month
+    grid = "".join(f'<line x1="{x}" y1="70" x2="{x}" y2="{H - 20}"/>' for x in range(x0, x1 + 1, 22)) + \
+        "".join(f'<line x1="{x0}" y1="{y}" x2="{x1}" y2="{y}"/>' for y in range(70, H - 19, 22))
+
+    avg = round(cal.total / max(1, nweeks))
+    best = cal.best
+    readouts = [
+        ("PULSE", avg, " /wk", trace, "weekly average"),
+        ("TOTAL", cal.total, "", "#ffd166", f"{cal.days[0].date:%b %Y} – {cal.days[-1].date:%b %Y}"),
+        ("STREAK", cal.current_streak, " d", "#4cc9f0", f"best {cal.longest_streak} d"),
+        ("PEAK", best.count, "", "#ff6b9a", f"{best.date:%b %-d, %Y}"),
+    ]
+    rx, ry = 628, 72
+    panel = []
+    for i, (label, value, suffix, col, note) in enumerate(readouts):
+        y = ry + i * 60
+        panel.append(
+            f'<g><rect x="{rx}" y="{y}" width="{W - rx - 24}" height="52" rx="6" class="cardbg"/>'
+            f'<text x="{rx + 12}" y="{y + 17}" class="rlabel" fill="{col}">{label}</text>'
+            f'<text x="{rx + 12}" y="{y + 44}" class="rnote">{esc(note)}</text>'
+            f'<g fill="{col}">{count_up(W - 36, y + 42, value, "rval", sweep, 0.2 + i * 0.15, 1.6, suffix, anchor="end")}</g></g>'
+        )
+    heart = "M0 3 C -6 -3 -12 2 -6 8 L0 13 L6 8 C 12 2 6 -3 0 3 Z"
+
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="{esc(cal.user)} contributions heartbeat">
+  <title>{esc(cal.user)}'s GitHub contributions as a heartbeat</title>
+  <defs>
+    <filter id="glow" x="-5%" y="-30%" width="110%" height="160%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="dotGlow" x="-200%" y="-200%" width="500%" height="500%"><feGaussianBlur stdDeviation="4"/></filter>
+    <linearGradient id="gapFade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="{bg}" stop-opacity="0"/><stop offset=".25" stop-color="{bg}"/>
+      <stop offset="1" stop-color="{bg}"/>
+    </linearGradient>
+    <clipPath id="frame"><rect width="{W}" height="{H}" rx="14"/></clipPath>
+    <clipPath id="screen"><rect x="{x0 - 10}" y="64" width="{x1 - x0 + 20}" height="{H - 80}"/></clipPath>
+  </defs>
+  <style>{BASE_CSS}
+    .grid  {{ stroke: {trace}; stroke-opacity: .07; }}
+    .axis  {{ font: 400 10px {SANS}; fill: #6e7681; }}
+    .ecg   {{ fill: none; stroke: {trace}; stroke-width: 1.6; stroke-linejoin: round; opacity: .55; }}
+    .tail  {{ fill: none; stroke: {shade(trace, 1.3)}; stroke-width: 2.4; stroke-linejoin: round; stroke-linecap: round;
+             stroke-dasharray: {tail:.0f} {total * 2:.0f}; }}
+    .rlabel {{ font: 700 11px {SANS}; letter-spacing: 2px; }}
+    .rnote {{ font: 400 10px {SANS}; fill: #6e7681; }}
+    .rval  {{ font: 800 26px {MONO}; }}
+    .heart {{ fill: #ff6b9a; animation: beat {sweep / nweeks * 2:.3f}s ease-out infinite; transform-box: fill-box; transform-origin: center; }}
+    .live  {{ font: 700 10px {MONO}; fill: #ff6b9a; letter-spacing: 2px; animation: live 1.2s steps(1) infinite; }}
+    @keyframes beat {{ 0%,100% {{ transform: scale(1); }} 15% {{ transform: scale(1.35); }} 30% {{ transform: scale(.95); }} 45% {{ transform: scale(1.15); }} 60% {{ transform: scale(1); }} }}
+    @keyframes live {{ 0%,60% {{ opacity: 1; }} 61%,100% {{ opacity: .25; }} }}
+    @media (prefers-reduced-motion: reduce) {{ * {{ animation: none !important; }} text[opacity="0"] {{ display: none; }} .sweep {{ display: none; }} }}
+  </style>
+  <g clip-path="url(#frame)">
+    <rect width="{W}" height="{H}" fill="{bg}"/>
+    <text x="40" y="38" class="title">@{esc(cal.user)}</text>
+    <text x="{40 + 12 * (len(cal.user) + 1) + 10}" y="38" class="sub">one heartbeat per week of contributions</text>
+    <g transform="translate({W - 120} 26)"><path class="heart" d="{heart}"/></g>
+    <text x="{W - 104}" y="38" class="live">LIVE</text>
+    <g class="grid">{grid}</g>
+    <g clip-path="url(#screen)">
+      <path class="ecg" d="{d_path}" filter="url(#glow)"/>
+      <g class="sweep">
+        <path class="tail" d="{d_path}" filter="url(#glow)">
+          <animate attributeName="stroke-dashoffset" dur="{sweep}s" repeatCount="indefinite" keyTimes="{kt}" values="{dash_vals}"/>
+        </path>
+        <rect y="64" width="22" height="{H - 80}" fill="url(#gapFade)">
+          <animate attributeName="x" dur="{sweep}s" repeatCount="indefinite" values="{x0 + 3};{x1 + 3}"/>
+        </rect>
+        <g>
+          <animateMotion dur="{sweep}s" repeatCount="indefinite" calcMode="linear" path="{d_path}"
+            keyTimes="{kt}" keyPoints="{kp}"/>
+          <circle r="7" fill="{trace}" filter="url(#dotGlow)"/>
+          <circle r="2.6" fill="#fff"/>
+        </g>
+      </g>
+    </g>
+    {"".join(months)}
+    {"".join(panel)}
+  </g>
+</svg>
+"""
+
+
+STYLES = {"contrib-grid": build_grid, "contrib-city": build_city,
+          "contrib-galaxy": build_galaxy, "contrib-heartbeat": build_heartbeat}

@@ -1,5 +1,5 @@
-"""Six more banner styles: a neofetch terminal, northern lights, a rotating hologram,
-a circuit board, a hyperspace jump and a music player with a live equalizer.
+"""More banner styles: a neofetch terminal, northern lights, a rotating hologram, a circuit
+board, a hyperspace jump, a music player with a live equalizer and falling cherry blossoms.
 
 Same contract as creative.py: (name, lines, tags, theme, seed) -> svg string, using only CSS
 animations and SMIL so the banners play on GitHub.
@@ -938,6 +938,194 @@ def build_equalizer(name: str, lines: list[str], tags: list[str], theme: str, se
 """
 
 
+# ================================================================ cherry blossoms
+
+# a notched sakura petal, centred on the origin, about 10 x 13 units
+PETAL = "M0 6.5 C-5.5 3 -6 -3.5 -2.6 -6.5 L0 -4.6 L2.6 -6.5 C6 -3.5 5.5 3 0 6.5Z"
+
+
+def _branch(rng: random.Random, x: float, y: float, ang: float, length: float, width: float, depth: int,
+            segs: list, tips: list) -> None:
+    """Recursive tapered branch; collects (polygon d) segments and blossom spots along it."""
+    bend = rng.uniform(-0.25, 0.25)
+    x1, y1 = x + math.cos(ang) * length, y + math.sin(ang) * length
+    w1 = width * 0.62
+    nx, ny = -math.sin(ang), math.cos(ang)
+    mx, my = (x + x1) / 2 + nx * length * bend * 0.3, (y + y1) / 2 + ny * length * bend * 0.3
+    segs.append(
+        f"M{x + nx * width / 2:.1f} {y + ny * width / 2:.1f} "
+        f"Q{mx + nx * (width + w1) / 4:.1f} {my + ny * (width + w1) / 4:.1f} {x1 + nx * w1 / 2:.1f} {y1 + ny * w1 / 2:.1f} "
+        f"L{x1 - nx * w1 / 2:.1f} {y1 - ny * w1 / 2:.1f} "
+        f"Q{mx - nx * (width + w1) / 4:.1f} {my - ny * (width + w1) / 4:.1f} {x - nx * width / 2:.1f} {y - ny * width / 2:.1f}Z"
+        f"M{x1 + w1 / 2:.1f} {y1:.1f} a{w1 / 2:.1f} {w1 / 2:.1f} 0 1 0 0 .01Z"
+    )
+    if depth <= 2:
+        for _ in range(rng.randint(1, 3)):
+            t = rng.uniform(0.3, 1)
+            tips.append((x + (x1 - x) * t + rng.uniform(-6, 6), y + (y1 - y) * t + rng.uniform(-6, 6)))
+    if depth == 0:
+        tips.append((x1, y1))
+        return
+    for da in (rng.uniform(-0.7, -0.3), rng.uniform(0.25, 0.6)):
+        _branch(rng, x1, y1, ang + da, length * rng.uniform(0.58, 0.75), w1, depth - 1, segs, tips)
+
+
+def _flower(x: float, y: float, r: float, rot: float, cls: str, delay: float) -> str:
+    return (
+        f'<g transform="translate({x:.1f} {y:.1f}) rotate({rot:.0f}) scale({r / 7:.2f})">'
+        f'<use href="#flower" class="{cls}" style="animation-delay:-{delay:.2f}s"/></g>'
+    )
+
+
+def build_sakura(name: str, lines: list[str], tags: list[str], theme: str, seed: int) -> str:
+    """Cherry blossoms: branches sway, petals tumble down, and a gust of wind sweeps through now and then."""
+    W, H = 900, 280
+    rng = random.Random(seed)
+    bg, (c1, _c2, c3) = THEMES[theme]
+    dusk = {"aurora": "#3a2347", "sunset": "#6b2f45", "ocean": "#1f3560"}.get(theme, "#3a2347")
+    serif = "'Noto Serif', 'Hiragino Mincho ProN', Georgia, 'Times New Roman', serif"
+
+    branches = []
+    for (bx, by, ang, ln, wd, depth, flip) in [(-14, 10, 0.2, 92, 14, 4, False), (W + 14, -8, 0.32, 78, 11, 3, True)]:
+        segs: list[str] = []
+        tips: list[tuple[float, float]] = []
+        _branch(rng, 0, 0, ang, ln, wd, depth, segs, tips)
+        flowers = []
+        for (fx, fy) in tips:
+            for _ in range(rng.randint(1, 2)):
+                flowers.append(_flower(fx + rng.uniform(-9, 9), fy + rng.uniform(-9, 9), rng.uniform(5.5, 9.5),
+                                       rng.uniform(0, 72), "fl", rng.uniform(0, 4)))
+            if rng.random() < 0.5:
+                flowers.append(f'<circle cx="{fx + rng.uniform(-12, 12):.1f}" cy="{fy + rng.uniform(-12, 12):.1f}" '
+                               f'r="{rng.uniform(2, 3.4):.1f}" fill="#f06292"/>')
+        mirror = " scale(-1 1)" if flip else ""
+        branches.append(
+            f'<g transform="translate({bx} {by}){mirror}"><g class="sway" style="animation-duration:{rng.uniform(5, 7):.1f}s">'
+            f'<path d="{"".join(segs)}" fill="#2b1720"/>{"".join(flowers)}</g></g>'
+        )
+
+    def fall_path(x0: float, drift: float, amp: float, waves: float, y0: float = -20, y1: float = H + 20) -> str:
+        pts = []
+        for k in range(17):
+            t = k / 16
+            pts.append((x0 + drift * t + amp * math.sin(t * waves * 2 * math.pi), y0 + (y1 - y0) * t))
+        return "M" + " L".join(f"{x:.1f} {y:.1f}" for x, y in pts)
+
+    petals = []
+    for _ in range(46):
+        dur = rng.uniform(9, 17)
+        size = rng.uniform(0.55, 1.15)
+        path = fall_path(rng.uniform(-60, W), rng.uniform(40, 160), rng.uniform(10, 34), rng.uniform(1, 2.2))
+        petals.append(
+            f'<g><animateMotion dur="{dur:.1f}s" begin="-{rng.uniform(0, dur):.1f}s" repeatCount="indefinite" path="{path}"/>'
+            f'<g transform="scale({size:.2f})"><use href="#pt" class="tumble" '
+            f'style="animation-duration:{rng.uniform(2.4, 4.8):.1f}s;animation-delay:-{rng.uniform(0, 4):.1f}s;'
+            f'opacity:{rng.uniform(.7, 1):.2f}"/></g></g>'
+        )
+
+    # a gust: a ribbon of petals races across the sky for the first part of every cycle
+    gust_cycle = 13.0
+    gust = []
+    for i in range(24):
+        y = H * 0.42 + rng.uniform(-45, 45)
+        path = (f"M-40 {y:.0f} C{W * .3:.0f} {y - rng.uniform(30, 70):.0f} {W * .6:.0f} {y + rng.uniform(20, 60):.0f} "
+                f"{W + 40} {y - rng.uniform(0, 40):.0f}")
+        start = 0.05 + rng.uniform(0, 0.08)
+        end = start + rng.uniform(0.13, 0.19)
+        gust.append(
+            f'<g><animateMotion dur="{gust_cycle}s" repeatCount="indefinite" path="{path}" rotate="auto" '
+            f'keyPoints="0;0;1;1" keyTimes="0;{start:.3f};{end:.3f};1" calcMode="linear"/>'
+            f'<g transform="scale({rng.uniform(.8, 1.3):.2f})"><use href="#pt" class="tumble" '
+            f'style="animation-duration:{rng.uniform(.8, 1.4):.1f}s"/></g></g>'
+        )
+
+    pile = "".join(
+        f'<use href="#pt" opacity="{rng.uniform(.45, .9):.2f}" '
+        f'transform="translate({rng.uniform(0, W):.0f} {H - rng.uniform(2, 14):.0f}) rotate({rng.uniform(0, 360):.0f}) '
+        f'scale({rng.uniform(.5, .9):.2f} {rng.uniform(.3, .5):.2f})"/>' for _ in range(70)
+    )
+    bokeh = "".join(
+        f'<circle cx="{rng.uniform(0, W):.0f}" cy="{rng.uniform(20, H - 40):.0f}" r="{rng.uniform(8, 26):.0f}" class="bokeh" '
+        f'style="animation-duration:{rng.uniform(6, 11):.1f}s;animation-delay:-{rng.uniform(0, 8):.1f}s"/>' for _ in range(14)
+    )
+
+    name_fs = min(50, 600 / max(1, len(name)) / 0.55)
+    chars = "".join(
+        f'<tspan class="ch" style="animation-delay:{0.3 + i * 0.09:.2f}s">{esc(c)}</tspan>' for i, c in enumerate(name)
+    )
+    sub = esc(lines[0] if lines else "")
+    seal_ch = esc(_handle(name)[:1].upper())
+    flower_petals = "".join(f'<path d="{PETAL}" transform="rotate({k * 72}) translate(0 -6.2)"/>' for k in range(5))
+    tx, ty = W / 2, 138
+    seal_x = tx + text_width(name, name_fs) * 0.45 + 16  # serif glyphs are narrower than the estimate
+
+    return f"""{svg_open(W, H, name)}
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{bg}"/><stop offset=".65" stop-color="{dusk}"/><stop offset="1" stop-color="#b56a8a"/>
+    </linearGradient>
+    <radialGradient id="moon"><stop offset="0" stop-color="#fff4f0"/><stop offset=".55" stop-color="#ffe3ea" stop-opacity=".9"/>
+      <stop offset="1" stop-color="#ffd1dc" stop-opacity="0"/></radialGradient>
+    <radialGradient id="petal" cx="50%" cy="80%" r="80%">
+      <stop offset="0" stop-color="#fff"/><stop offset=".55" stop-color="#ffd3e0"/><stop offset="1" stop-color="#f7a1bf"/>
+    </radialGradient>
+    <radialGradient id="bloom" cx="50%" cy="100%" r="100%">
+      <stop offset="0" stop-color="#ff9fc0"/><stop offset=".45" stop-color="#ffe4ee"/><stop offset="1" stop-color="#fff"/>
+    </radialGradient>
+    <linearGradient id="nameG" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#ffc9da"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-60%" width="140%" height="220%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="soft"><feGaussianBlur stdDeviation="6"/></filter>
+    <path id="pt" d="{PETAL}" fill="url(#petal)"/>
+    <g id="flower"><g fill="url(#bloom)">{flower_petals}</g><circle r="2.6" fill="#ff7aa8"/><circle r="1.2" fill="#ffe08a"/></g>
+    <clipPath id="frame"><rect width="{W}" height="{H}" rx="16"/></clipPath>
+  </defs>
+  <style>
+    .sway   {{ animation: sway ease-in-out infinite alternate; }}
+    @keyframes sway {{ from {{ transform: rotate(-1.2deg); }} to {{ transform: rotate(1.6deg); }} }}
+    .fl     {{ animation: fl 4s ease-in-out infinite alternate; }}
+    @keyframes fl {{ from {{ transform: scale(.92) rotate(-6deg); }} to {{ transform: scale(1.05) rotate(6deg); }} }}
+    .tumble {{ animation: tumble linear infinite; }}
+    @keyframes tumble {{ 0% {{ transform: rotate(0) scaleX(1); }} 25% {{ transform: rotate(90deg) scaleX(.15); }}
+                        50% {{ transform: rotate(180deg) scaleX(-1); }} 75% {{ transform: rotate(270deg) scaleX(-.15); }}
+                        100% {{ transform: rotate(360deg) scaleX(1); }} }}
+    .bokeh  {{ fill: #ffc0d4; filter: url(#soft); animation: bokeh ease-in-out infinite alternate; }}
+    @keyframes bokeh {{ from {{ opacity: .04; transform: translateY(6px); }} to {{ opacity: .2; transform: translateY(-10px); }} }}
+    .name   {{ font: 500 {name_fs:.1f}px {serif}; fill: url(#nameG); letter-spacing: 3px; }}
+    .ch     {{ animation: bloomIn 1.2s ease-out both; }}
+    @keyframes bloomIn {{ from {{ opacity: 0; fill: #ff8fb4; }} }}
+    .sub    {{ font: italic 500 15px {serif}; fill: #ffe3ec; letter-spacing: 3px; animation: subIn 2s 1.6s ease-out both; }}
+    @keyframes subIn {{ from {{ opacity: 0; letter-spacing: 10px; }} }}
+    .seal   {{ animation: subIn 1s 2.2s ease-out both; }}
+    {reduced()}
+  </style>
+  <g clip-path="url(#frame)">
+    <rect width="{W}" height="{H}" fill="url(#sky)"/>
+    <circle cx="{W - 120}" cy="70" r="70" fill="url(#moon)" opacity=".85"/>
+    <circle cx="{W - 120}" cy="70" r="34" fill="#fff6f2" opacity=".9"/>
+    {bokeh}
+    <path d="M0 {H - 34} Q{W * .25:.0f} {H - 60} {W * .5:.0f} {H - 40} T{W} {H - 46} V{H} H0Z" fill="#2b1726" opacity=".55"/>
+    <path d="M0 {H - 16} Q{W * .3:.0f} {H - 34} {W * .62:.0f} {H - 18} T{W} {H - 22} V{H} H0Z" fill="#1d0f19" opacity=".8"/>
+    {pile}
+    {"".join(branches)}
+    <text x="{tx}" y="{ty}" text-anchor="middle" class="name" filter="url(#glow)">{chars}</text>
+    <text x="{tx}" y="{ty + 36}" text-anchor="middle" class="sub">{sub}</text>
+    <g class="seal" transform="translate({seal_x:.0f} {ty - name_fs * .62:.0f}) rotate(4)">
+      <rect width="26" height="26" rx="4" fill="#d6304f" opacity=".9"/>
+      <rect x="3" y="3" width="20" height="20" rx="2" fill="none" stroke="#ffe3e8" stroke-width="1.2" opacity=".8"/>
+      <text x="13" y="18.5" text-anchor="middle" font-family="{serif}" font-weight="700" font-size="14" fill="#ffe3e8">{seal_ch}</text>
+    </g>
+    {"".join(petals)}
+    {"".join(gust)}
+  </g>
+</svg>
+"""
+
+
 STYLES = {
     "terminal": build_terminal,
     "borealis": build_borealis,
@@ -945,4 +1133,5 @@ STYLES = {
     "circuit": build_circuit,
     "warp": build_warp,
     "equalizer": build_equalizer,
+    "sakura": build_sakura,
 }

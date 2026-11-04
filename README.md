@@ -101,6 +101,13 @@ and the progress bar and clock really tick through a 4:00 track. Your name is th
 
 <img src="assets/equalizer.svg" width="100%"/>
 
+### `sakura`
+Cherry blossoms at dusk. Blossom-laden branches sway in front of a pale moon, petals tumble and flip as they fall
+onto a petal-strewn hill, and every few seconds a gust of wind sweeps a stream of petals across. Your name
+blooms in letter by letter next to a red seal stamped with your initial.
+
+<img src="assets/sakura.svg" width="100%"/>
+
 ## Contribution graph styles
 
 Built from your real GitHub contribution calendar, fetched from the public page `github.com/users/<user>/contributions` (no token needed).
@@ -166,14 +173,14 @@ python3 generate.py --help
 
 | Option | Description | Default |
 |---|---|---|
-| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `sakura` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
 | `--user` | GitHub username for `contrib-*` (with `all`, also generates the contrib styles) | — |
 | `--palette` | `green` · `halloween` · `ice` · `neon` (`contrib-*`) | `green` |
 | `--contrib-html` | Use a saved contributions HTML page instead of fetching it | — |
 | `--name` | Large title | `Hi, I'm Jihoo` |
 | `--line` | Subtitle lines, repeatable (`banner`/`matrix`/`splitflap` use all of them; the others use the first) | 3 sample lines |
 | `--tag` | Tags, repeatable (`orbit` orbits them; `splitflap`/`blueprint`/`terminal`/`hologram`/`circuit`/`warp`/`equalizer` print them) | Python, Nix, Linux, … |
-| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope` and the six styles from `terminal` to `equalizer`) | `aurora` |
+| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope` and the styles from `terminal` to `sakura`) | `aurora` |
 | `--seed` | Random seed for stars / code rain | `42` |
 | `--out` | Output path (single style only) | `assets/<style>.svg` |
 

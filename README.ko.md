@@ -99,6 +99,12 @@ HUD 프레임에는 태그가 목적지로 표시됩니다.
 
 <img src="assets/equalizer.svg" width="100%"/>
 
+### `sakura`
+해 질 녘의 벚꽃입니다. 꽃이 가득 핀 가지가 달 앞에서 살랑이고, 꽃잎이 뒤집히며 떨어져 언덕에 쌓입니다.
+몇 초마다 바람이 불어 꽃잎 무리가 화면을 가로지릅니다. 이름은 한 글자씩 피어나고, 옆에 첫 글자가 새겨진 붉은 낙관이 찍힙니다.
+
+<img src="assets/sakura.svg" width="100%"/>
+
 ## Contribution graph 스타일
 
 실제 GitHub contribution 기록으로 만듭니다. 데이터는 공개 페이지 `github.com/users/<user>/contributions`에서 가져오므로 토큰이 필요 없습니다.
@@ -163,14 +169,14 @@ python3 generate.py --help
 
 | 옵션 | 설명 | 기본값 |
 |---|---|---|
-| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `sakura` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
 | `--user` | `contrib-*` 스타일용 GitHub 사용자 이름 (`all`과 함께 쓰면 contrib 스타일도 생성) | — |
 | `--palette` | `green` · `halloween` · `ice` · `neon` (`contrib-*`) | `green` |
 | `--contrib-html` | 가져오는 대신 저장해 둔 contributions HTML 사용 | — |
 | `--name` | 큰 타이틀 | `Hi, I'm Jihoo` |
 | `--line` | 부제목 문구, 여러 번 지정 가능 (`banner`/`matrix`/`splitflap`은 모두 사용, 나머지는 첫 줄만 사용) | 예시 문구 3개 |
 | `--tag` | 태그, 여러 번 지정 가능 (`orbit`은 궤도로 돌리고 `splitflap`/`blueprint`/`terminal`/`hologram`/`circuit`/`warp`/`equalizer`는 글자로 표시) | Python, Nix, Linux, … |
-| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope`, 그리고 `terminal`~`equalizer` 6종) | `aurora` |
+| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope`, 그리고 `terminal`~`sakura`) | `aurora` |
 | `--seed` | 별/코드 비 배치용 랜덤 시드 | `42` |
 | `--out` | 출력 경로 (스타일 하나일 때만) | `assets/<style>.svg` |
 

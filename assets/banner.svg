@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="260" viewBox="0 0 900 260" role="img" aria-label="Hi, I&#x27;m Jihoo">
+  <title>Hi, I&#x27;m Jihoo</title>
+  <defs>
+    <linearGradient id="grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#7f5af0"><animate attributeName="stop-color" values="#7f5af0;#2cb67d;#3da9fc;#7f5af0" dur="8s" repeatCount="indefinite"/></stop>
+      <stop offset="50%" stop-color="#2cb67d"><animate attributeName="stop-color" values="#2cb67d;#3da9fc;#7f5af0;#2cb67d" dur="8s" repeatCount="indefinite"/></stop>
+      <stop offset="100%" stop-color="#3da9fc"><animate attributeName="stop-color" values="#3da9fc;#7f5af0;#2cb67d;#3da9fc" dur="8s" repeatCount="indefinite"/></stop>
+    </linearGradient>
+    <radialGradient id="glow" cx="50%" cy="0%" r="80%">
+      <stop offset="0%" stop-color="#7f5af0" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#0d1117" stop-opacity="0"/>
+    </radialGradient>
+    <clipPath id="frame"><rect width="900" height="260" rx="18"/></clipPath>
+  </defs>
+  <style>
+    .title { font: 800 56px 'Segoe UI', Ubuntu, 'Helvetica Neue', sans-serif; fill: url(#grad);
+             animation: rise 1.2s cubic-bezier(.2,.8,.2,1) both; }
+    .type  { font: 500 22px ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; fill: #e6edf3; }
+    .cursor { fill: #2cb67d; }
+    .star  { fill: #fff; animation: twinkle ease-in-out infinite; }
+    .wave  { animation: drift linear infinite; }
+    .orb   { animation: float 6s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+    @keyframes rise    { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+    @keyframes twinkle { 0%,100% { opacity: .15; } 50% { opacity: 1; } }
+    @keyframes drift   { from { transform: translateX(0); } to { transform: translateX(-900px); } }
+    @keyframes float   { 0%,100% { transform: translateY(0) scale(1); } 50% { transform: translateY(-14px) scale(1.08); } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <g clip-path="url(#frame)">
+    <rect width="900" height="260" fill="#0d1117"/>
+    <rect width="900" height="260" fill="url(#glow)"/>
+    <circle class="star" cx="575.5" cy="4.9" r="0.93" style="animation-duration:2.67s;animation-delay:-3.68s"/>
+    <circle class="star" cx="609.0" cy="174.0" r="0.70" style="animation-duration:3.27s;animation-delay:-0.15s"/>
+    <circle class="star" cx="196.8" cy="98.5" r="0.63" style="animation-duration:2.60s;animation-delay:-3.25s"/>
+    <circle class="star" cx="490.4" cy="43.0" r="1.31" style="animation-duration:4.43s;animation-delay:-0.03s"/>
+    <circle class="star" cx="725.2" cy="136.1" r="1.01" style="animation-duration:2.47s;animation-delay:-4.79s"/>
+    <circle class="star" cx="302.9" cy="18.1" r="0.72" style="animation-duration:4.54s;animation-delay:-3.02s"/>
+    <circle class="star" cx="726.4" cy="142.3" r="1.24" style="animation-duration:4.92s;animation-delay:-1.89s"/>
+    <circle class="star" cx="496.8" cy="161.7" r="1.34" style="animation-duration:4.59s;animation-delay:-2.89s"/>
+    <circle class="star" cx="634.1" cy="8.9" r="0.87" style="animation-duration:2.87s;animation-delay:-0.40s"/>
+    <circle class="star" cx="209.5" cy="19.7" r="0.93" style="animation-duration:3.91s;animation-delay:-1.82s"/>
+    <circle class="star" cx="333.2" cy="40.9" r="0.92" style="animation-duration:4.81s;animation-delay:-3.24s"/>
+    <circle class="star" cx="548.2" cy="33.4" r="1.47" style="animation-duration:2.49s;animation-delay:-1.90s"/>
+    <circle class="star" cx="890.6" cy="124.8" r="1.27" style="animation-duration:4.05s;animation-delay:-4.21s"/>
+    <circle class="star" cx="698.4" cy="44.7" r="0.64" style="animation-duration:2.95s;animation-delay:-1.34s"/>
+    <circle class="star" cx="189.9" cy="183.9" r="1.65" style="animation-duration:2.94s;animation-delay:-3.28s"/>
+    <circle class="star" cx="356.1" cy="178.3" r="1.15" style="animation-duration:2.79s;animation-delay:-1.23s"/>
+    <circle class="star" cx="505.2" cy="51.2" r="1.30" style="animation-duration:4.69s;animation-delay:-2.00s"/>
+    <circle class="star" cx="197.4" cy="194.5" r="1.21" style="animation-duration:2.27s;animation-delay:-0.24s"/>
+    <circle class="star" cx="98.7" cy="122.4" r="1.55" style="animation-duration:3.27s;animation-delay:-0.32s"/>
+    <circle class="star" cx="343.5" cy="194.2" r="1.23" style="animation-duration:4.91s;animation-delay:-4.30s"/>
+    <circle class="star" cx="10.3" cy="140.5" r="1.42" style="animation-duration:3.61s;animation-delay:-1.33s"/>
+    <circle class="star" cx="576.9" cy="21.8" r="1.12" style="animation-duration:3.36s;animation-delay:-4.77s"/>
+    <circle class="star" cx="788.3" cy="51.4" r="1.20" style="animation-duration:2.54s;animation-delay:-4.56s"/>
+    <circle class="star" cx="783.5" cy="58.2" r="1.37" style="animation-duration:3.83s;animation-delay:-0.76s"/>
+    <circle class="star" cx="686.3" cy="105.2" r="1.53" style="animation-duration:3.59s;animation-delay:-0.00s"/>
+    <circle class="star" cx="291.7" cy="3.8" r="1.71" style="animation-duration:4.64s;animation-delay:-4.16s"/>
+    <circle class="star" cx="276.8" cy="11.3" r="1.65" style="animation-duration:4.84s;animation-delay:-0.43s"/>
+    <circle class="star" cx="437.4" cy="13.5" r="1.51" style="animation-duration:4.30s;animation-delay:-0.64s"/>
+    <circle class="star" cx="427.8" cy="107.2" r="0.92" style="animation-duration:4.62s;animation-delay:-2.12s"/>
+    <circle class="star" cx="190.6" cy="105.2" r="1.48" style="animation-duration:2.60s;animation-delay:-1.56s"/>
+    <circle class="star" cx="895.6" cy="126.7" r="1.13" style="animation-duration:3.55s;animation-delay:-0.61s"/>
+    <circle class="star" cx="202.2" cy="65.9" r="1.31" style="animation-duration:2.69s;animation-delay:-1.10s"/>
+    <circle class="star" cx="63.9" cy="123.1" r="0.87" style="animation-duration:4.72s;animation-delay:-4.30s"/>
+    <circle class="star" cx="63.8" cy="46.4" r="1.40" style="animation-duration:2.64s;animation-delay:-0.66s"/>
+    <circle class="star" cx="842.0" cy="111.4" r="1.17" style="animation-duration:4.35s;animation-delay:-4.04s"/>
+    <circle class="star" cx="171.4" cy="18.9" r="1.12" style="animation-duration:3.27s;animation-delay:-2.34s"/>
+    <circle class="star" cx="656.2" cy="131.3" r="1.78" style="animation-duration:2.30s;animation-delay:-2.01s"/>
+    <circle class="star" cx="305.4" cy="168.0" r="0.90" style="animation-duration:2.57s;animation-delay:-2.24s"/>
+    <circle class="star" cx="379.7" cy="54.3" r="0.90" style="animation-duration:4.77s;animation-delay:-2.22s"/>
+    <circle class="star" cx="775.2" cy="107.3" r="0.66" style="animation-duration:5.00s;animation-delay:-4.18s"/>
+    <circle class="star" cx="872.1" cy="180.6" r="1.62" style="animation-duration:2.50s;animation-delay:-2.43s"/>
+    <circle class="star" cx="192.4" cy="78.2" r="0.67" style="animation-duration:3.14s;animation-delay:-4.93s"/>
+    <circle class="star" cx="238.7" cy="152.9" r="1.15" style="animation-duration:3.27s;animation-delay:-4.79s"/>
+    <circle class="star" cx="895.9" cy="108.4" r="1.46" style="animation-duration:2.46s;animation-delay:-1.48s"/>
+    <circle class="star" cx="871.8" cy="112.9" r="1.25" style="animation-duration:4.24s;animation-delay:-0.29s"/>
+    <circle class="star" cx="525.8" cy="98.1" r="1.62" style="animation-duration:2.47s;animation-delay:-4.80s"/>
+    <circle class="star" cx="72.1" cy="36.2" r="1.31" style="animation-duration:4.03s;animation-delay:-1.18s"/>
+    <circle class="star" cx="107.9" cy="173.6" r="0.90" style="animation-duration:3.78s;animation-delay:-3.10s"/>
+    <circle class="star" cx="377.3" cy="113.8" r="1.23" style="animation-duration:4.80s;animation-delay:-1.02s"/>
+    <circle class="star" cx="644.6" cy="46.5" r="1.07" style="animation-duration:4.02s;animation-delay:-1.50s"/>
+    <circle class="star" cx="284.6" cy="146.6" r="0.69" style="animation-duration:3.37s;animation-delay:-4.99s"/>
+    <circle class="star" cx="896.5" cy="14.3" r="0.86" style="animation-duration:2.80s;animation-delay:-4.67s"/>
+    <circle class="star" cx="792.8" cy="171.5" r="1.04" style="animation-duration:2.47s;animation-delay:-4.17s"/>
+    <circle class="star" cx="633.2" cy="119.3" r="1.78" style="animation-duration:3.96s;animation-delay:-0.04s"/>
+    <circle class="star" cx="735.4" cy="58.4" r="1.40" style="animation-duration:4.82s;animation-delay:-0.67s"/>
+    <circle class="star" cx="103.9" cy="20.9" r="1.26" style="animation-duration:2.82s;animation-delay:-3.02s"/>
+    <circle class="star" cx="645.9" cy="39.7" r="1.36" style="animation-duration:2.79s;animation-delay:-2.44s"/>
+    <circle class="star" cx="814.8" cy="165.0" r="0.71" style="animation-duration:3.27s;animation-delay:-1.38s"/>
+    <circle class="star" cx="3.2" cy="150.4" r="1.36" style="animation-duration:2.79s;animation-delay:-3.71s"/>
+    <circle class="star" cx="496.5" cy="83.4" r="0.61" style="animation-duration:2.23s;animation-delay:-4.42s"/>
+    <circle class="orb" cx="90" cy="70" r="38" fill="#7f5af0" opacity=".18"/>
+    <circle class="orb" cx="790" cy="60" r="26" fill="#3da9fc" opacity=".22" style="animation-delay:-2s"/>
+    <path class="wave" style="animation-duration:14s" d="M0 208 q 75.0 -10 150.0 0 t 150.0 0 q 75.0 -10 150.0 0 t 150.0 0 q 75.0 -10 150.0 0 t 150.0 0 q 75.0 -10 150.0 0 t 150.0 0 q 75.0 -10 150.0 0 t 150.0 0 q 75.0 -10 150.0 0 t 150.0 0 V 260 H 0 Z" fill="#7f5af0" opacity=".25"/>
+    <path class="wave" style="animation-duration:9s"  d="M0 224 q 56.25 -8 112.5 0 t 112.5 0 q 56.25 -8 112.5 0 t 112.5 0 q 56.25 -8 112.5 0 t 112.5 0 q 56.25 -8 112.5 0 t 112.5 0 q 56.25 -8 112.5 0 t 112.5 0 q 56.25 -8 112.5 0 t 112.5 0 q 56.25 -8 112.5 0 t 112.5 0 q 56.25 -8 112.5 0 t 112.5 0 V 260 H 0 Z" fill="#2cb67d" opacity=".25"/>
+    <path class="wave" style="animation-duration:6s"  d="M0 240 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 q 45.0 -6 90.0 0 t 90.0 0 V 260 H 0 Z" fill="#3da9fc" opacity=".3"/>
+  </g>
+
+  <text x="50%" y="95" text-anchor="middle" class="title">Hi, I&#x27;m Jihoo</text>
+  
+  <clipPath id="clip0">
+    <rect x="311.4" y="128" height="35.2" width="0">
+      <animate attributeName="width" dur="14.28s" repeatCount="indefinite"
+        calcMode="discrete" keyTimes="0.000000;0.005602;0.011204;0.016807;0.022409;0.028011;0.033613;0.039216;0.044818;0.050420;0.056022;0.061625;0.067227;0.072829;0.078431;0.084034;0.089636;0.095238;0.100840;0.106443;0.112045;0.117647;0.229692;0.232493;0.235294;0.238095;0.240896;0.243697;0.246499;0.249300;0.252101;0.254902;0.257703;0.260504;0.263305;0.266106;0.268908;0.271709;0.274510;0.277311;0.280112;0.282913;0.285714;0.288515;1.000000" values="0.0;13.2;26.4;39.6;52.8;66.0;79.2;92.4;105.6;118.8;132.0;145.2;158.4;171.6;184.8;198.0;211.2;224.4;237.6;250.8;264.0;277.2;277.2;264.0;250.8;237.6;224.4;211.2;198.0;184.8;171.6;158.4;145.2;132.0;118.8;105.6;92.4;79.2;66.0;52.8;39.6;26.4;13.2;0.0;0.0"/>
+    </rect>
+  </clipPath>
+  <text x="311.4" y="150" class="type" clip-path="url(#clip0)">Welcome to my GitHub!</text>
+  <rect class="cursor" x="311.4" y="130" width="3" height="26" opacity="0">
+    <animate attributeName="x" dur="14.28s" repeatCount="indefinite"
+      calcMode="discrete" keyTimes="0.000000;0.005602;0.011204;0.016807;0.022409;0.028011;0.033613;0.039216;0.044818;0.050420;0.056022;0.061625;0.067227;0.072829;0.078431;0.084034;0.089636;0.095238;0.100840;0.106443;0.112045;0.117647;0.229692;0.232493;0.235294;0.238095;0.240896;0.243697;0.246499;0.249300;0.252101;0.254902;0.257703;0.260504;0.263305;0.266106;0.268908;0.271709;0.274510;0.277311;0.280112;0.282913;0.285714;0.288515;1.000000" values="311.4;324.6;337.8;351.0;364.2;377.4;390.6;403.8;417.0;430.2;443.4;456.6;469.8;483.0;496.2;509.4;522.6;535.8;549.0;562.2;575.4;588.6;588.6;575.4;562.2;549.0;535.8;522.6;509.4;496.2;483.0;469.8;456.6;443.4;430.2;417.0;403.8;390.6;377.4;364.2;351.0;337.8;324.6;311.4;311.4"/>
+    <animate attributeName="opacity" dur="14.28s" repeatCount="indefinite"
+      calcMode="discrete" keyTimes="0.000000;0.005602;0.011204;0.016807;0.022409;0.028011;0.033613;0.039216;0.044818;0.050420;0.056022;0.061625;0.067227;0.072829;0.078431;0.084034;0.089636;0.095238;0.100840;0.106443;0.112045;0.117647;0.229692;0.232493;0.235294;0.238095;0.240896;0.243697;0.246499;0.249300;0.252101;0.254902;0.257703;0.260504;0.263305;0.266106;0.268908;0.271709;0.274510;0.277311;0.280112;0.282913;0.285714;0.288515;1.000000" values="1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0"/>
+  </rect>
+  <clipPath id="clip1">
+    <rect x="278.4" y="128" height="35.2" width="0">
+      <animate attributeName="width" dur="14.28s" repeatCount="indefinite"
+        calcMode="discrete" keyTimes="0.000000;0.316527;0.322129;0.327731;0.333333;0.338936;0.344538;0.350140;0.355742;0.361345;0.366947;0.372549;0.378151;0.383754;0.389356;0.394958;0.400560;0.406162;0.411765;0.417367;0.422969;0.428571;0.434174;0.439776;0.445378;0.450980;0.456583;0.462185;0.574230;0.577031;0.579832;0.582633;0.585434;0.588235;0.591036;0.593838;0.596639;0.599440;0.602241;0.605042;0.607843;0.610644;0.613445;0.616246;0.619048;0.621849;0.624650;0.627451;0.630252;0.633053;0.635854;0.638655;0.641457;0.644258;0.647059;1.000000" values="0.0;0.0;13.2;26.4;39.6;52.8;66.0;79.2;92.4;105.6;118.8;132.0;145.2;158.4;171.6;184.8;198.0;211.2;224.4;237.6;250.8;264.0;277.2;290.4;303.6;316.8;330.0;343.2;343.2;330.0;316.8;303.6;290.4;277.2;264.0;250.8;237.6;224.4;211.2;198.0;184.8;171.6;158.4;145.2;132.0;118.8;105.6;92.4;79.2;66.0;52.8;39.6;26.4;13.2;0.0;0.0"/>
+    </rect>
+  </clipPath>
+  <text x="278.4" y="150" class="type" clip-path="url(#clip1)">I love building cool stuff</text>
+  <rect class="cursor" x="278.4" y="130" width="3" height="26" opacity="0">
+    <animate attributeName="x" dur="14.28s" repeatCount="indefinite"
+      calcMode="discrete" keyTimes="0.000000;0.316527;0.322129;0.327731;0.333333;0.338936;0.344538;0.350140;0.355742;0.361345;0.366947;0.372549;0.378151;0.383754;0.389356;0.394958;0.400560;0.406162;0.411765;0.417367;0.422969;0.428571;0.434174;0.439776;0.445378;0.450980;0.456583;0.462185;0.574230;0.577031;0.579832;0.582633;0.585434;0.588235;0.591036;0.593838;0.596639;0.599440;0.602241;0.605042;0.607843;0.610644;0.613445;0.616246;0.619048;0.621849;0.624650;0.627451;0.630252;0.633053;0.635854;0.638655;0.641457;0.644258;0.647059;1.000000" values="278.4;278.4;291.6;304.8;318.0;331.2;344.4;357.6;370.8;384.0;397.2;410.4;423.6;436.8;450.0;463.2;476.4;489.6;502.8;516.0;529.2;542.4;555.6;568.8;582.0;595.2;608.4;621.6;621.6;608.4;595.2;582.0;568.8;555.6;542.4;529.2;516.0;502.8;489.6;476.4;463.2;450.0;436.8;423.6;410.4;397.2;384.0;370.8;357.6;344.4;331.2;318.0;304.8;291.6;278.4;278.4"/>
+    <animate attributeName="opacity" dur="14.28s" repeatCount="indefinite"
+      calcMode="discrete" keyTimes="0.000000;0.316527;0.322129;0.327731;0.333333;0.338936;0.344538;0.350140;0.355742;0.361345;0.366947;0.372549;0.378151;0.383754;0.389356;0.394958;0.400560;0.406162;0.411765;0.417367;0.422969;0.428571;0.434174;0.439776;0.445378;0.450980;0.456583;0.462185;0.574230;0.577031;0.579832;0.582633;0.585434;0.588235;0.591036;0.593838;0.596639;0.599440;0.602241;0.605042;0.607843;0.610644;0.613445;0.616246;0.619048;0.621849;0.624650;0.627451;0.630252;0.633053;0.635854;0.638655;0.641457;0.644258;0.647059;1.000000" values="0;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0"/>
+  </rect>
+  <clipPath id="clip2">
+    <rect x="304.8" y="128" height="35.2" width="0">
+      <animate attributeName="width" dur="14.28s" repeatCount="indefinite"
+        calcMode="discrete" keyTimes="0.000000;0.675070;0.680672;0.686275;0.691877;0.697479;0.703081;0.708683;0.714286;0.719888;0.725490;0.731092;0.736695;0.742297;0.747899;0.753501;0.759104;0.764706;0.770308;0.775910;0.781513;0.787115;0.792717;0.798319;0.910364;0.913165;0.915966;0.918768;0.921569;0.924370;0.927171;0.929972;0.932773;0.935574;0.938375;0.941176;0.943978;0.946779;0.949580;0.952381;0.955182;0.957983;0.960784;0.963585;0.966387;0.969188;0.971989;1.000000" values="0.0;0.0;13.2;26.4;39.6;52.8;66.0;79.2;92.4;105.6;118.8;132.0;145.2;158.4;171.6;184.8;198.0;211.2;224.4;237.6;250.8;264.0;277.2;290.4;290.4;277.2;264.0;250.8;237.6;224.4;211.2;198.0;184.8;171.6;158.4;145.2;132.0;118.8;105.6;92.4;79.2;66.0;52.8;39.6;26.4;13.2;0.0;0.0"/>
+    </rect>
+  </clipPath>
+  <text x="304.8" y="150" class="type" clip-path="url(#clip2)">Let&#x27;s code together :)</text>
+  <rect class="cursor" x="304.8" y="130" width="3" height="26" opacity="0">
+    <animate attributeName="x" dur="14.28s" repeatCount="indefinite"
+      calcMode="discrete" keyTimes="0.000000;0.675070;0.680672;0.686275;0.691877;0.697479;0.703081;0.708683;0.714286;0.719888;0.725490;0.731092;0.736695;0.742297;0.747899;0.753501;0.759104;0.764706;0.770308;0.775910;0.781513;0.787115;0.792717;0.798319;0.910364;0.913165;0.915966;0.918768;0.921569;0.924370;0.927171;0.929972;0.932773;0.935574;0.938375;0.941176;0.943978;0.946779;0.949580;0.952381;0.955182;0.957983;0.960784;0.963585;0.966387;0.969188;0.971989;1.000000" values="304.8;304.8;318.0;331.2;344.4;357.6;370.8;384.0;397.2;410.4;423.6;436.8;450.0;463.2;476.4;489.6;502.8;516.0;529.2;542.4;555.6;568.8;582.0;595.2;595.2;582.0;568.8;555.6;542.4;529.2;516.0;502.8;489.6;476.4;463.2;450.0;436.8;423.6;410.4;397.2;384.0;370.8;357.6;344.4;331.2;318.0;304.8;304.8"/>
+    <animate attributeName="opacity" dur="14.28s" repeatCount="indefinite"
+      calcMode="discrete" keyTimes="0.000000;0.675070;0.680672;0.686275;0.691877;0.697479;0.703081;0.708683;0.714286;0.719888;0.725490;0.731092;0.736695;0.742297;0.747899;0.753501;0.759104;0.764706;0.770308;0.775910;0.781513;0.787115;0.792717;0.798319;0.910364;0.913165;0.915966;0.918768;0.921569;0.924370;0.927171;0.929972;0.932773;0.935574;0.938375;0.941176;0.943978;0.946779;0.949580;0.952381;0.955182;0.957983;0.960784;0.963585;0.966387;0.969188;0.971989;1.000000" values="0;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0"/>
+  </rect>
+</svg>

@@ -1,10 +1,8 @@
 # Publishing the action
 
-The repository includes the root `action.yml`, an Apache-2.0 license, usage examples,
-and CI that exercises the composite action on Linux, macOS, and Windows.
+The repository includes the root `action.yml`, an Apache-2.0 license, and usage examples.
 
-1. Push these changes to the public `jihoo12/github-readme-svg` repository and wait
-   for **Test Marketplace action** to pass.
+1. Push these changes to the public `jihoo12/github-readme-svg` repository.
 2. Open **Releases → Draft a new release**, create the tag `v1.0.0`, and describe
    the initial release (21 SVG styles, multiline text and tags, contribution calendars).
 3. Select **Publish this Action to the GitHub Marketplace**. The repository owner

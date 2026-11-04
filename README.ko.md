@@ -105,6 +105,13 @@ HUD 프레임에는 태그가 목적지로 표시됩니다.
 
 <img src="assets/sakura.svg" width="100%"/>
 
+### `seishun`
+애니메이션 같은 청춘의 여름입니다. 빛줄기가 도는 태양과 렌즈 플레어 아래로 뭉게구름이 흘러가고, 비행기가 하늘에
+비행운을 그리고, 종이비행기가 학교 옥상 펜스 위에서 한 바퀴 돕니다. 이름은 "青春" 배지와 함께 굵은 타이틀로 튀어나오고,
+첫 번째 문구는 아래 리본에 들어갑니다. `--theme sunset`이면 노을 진 하늘이 됩니다.
+
+<img src="assets/seishun.svg" width="100%"/>
+
 ## Contribution graph 스타일
 
 실제 GitHub contribution 기록으로 만듭니다. 데이터는 공개 페이지 `github.com/users/<user>/contributions`에서 가져오므로 토큰이 필요 없습니다.
@@ -169,14 +176,14 @@ python3 generate.py --help
 
 | 옵션 | 설명 | 기본값 |
 |---|---|---|
-| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `sakura` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `sakura` · `seishun` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
 | `--user` | `contrib-*` 스타일용 GitHub 사용자 이름 (`all`과 함께 쓰면 contrib 스타일도 생성) | — |
 | `--palette` | `green` · `halloween` · `ice` · `neon` (`contrib-*`) | `green` |
 | `--contrib-html` | 가져오는 대신 저장해 둔 contributions HTML 사용 | — |
 | `--name` | 큰 타이틀 | `Hi, I'm Jihoo` |
 | `--line` | 부제목 문구, 여러 번 지정 가능 (`banner`/`matrix`/`splitflap`은 모두 사용, 나머지는 첫 줄만 사용) | 예시 문구 3개 |
 | `--tag` | 태그, 여러 번 지정 가능 (`orbit`은 궤도로 돌리고 `splitflap`/`blueprint`/`terminal`/`hologram`/`circuit`/`warp`/`equalizer`는 글자로 표시) | Python, Nix, Linux, … |
-| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope`, 그리고 `terminal`~`sakura`) | `aurora` |
+| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope`, 그리고 `terminal`~`seishun`) | `aurora` |
 | `--seed` | 별/코드 비 배치용 랜덤 시드 | `42` |
 | `--out` | 출력 경로 (스타일 하나일 때만) | `assets/<style>.svg` |
 

@@ -1,5 +1,6 @@
 """More banner styles: a neofetch terminal, northern lights, a rotating hologram, a circuit
-board, a hyperspace jump, a music player with a live equalizer and falling cherry blossoms.
+board, a hyperspace jump, a music player with a live equalizer, falling cherry blossoms
+and a summer-youth sky.
 
 Same contract as creative.py: (name, lines, tags, theme, seed) -> svg string, using only CSS
 animations and SMIL so the banners play on GitHub.
@@ -1126,6 +1127,192 @@ def build_sakura(name: str, lines: list[str], tags: list[str], theme: str, seed:
 """
 
 
+# ================================================================ seishun (summer youth)
+
+def _cloud(rng: random.Random, x: float, y: float, w: float, h: float, n: int, base: bool = True) -> str:
+    """A puffy cumulus made of overlapping shaded circles; (x, y) is the flat bottom-left corner."""
+    puffs = []
+    for _ in range(n):
+        u = rng.random()
+        r = rng.uniform(0.18, 0.32) * w * (1 - 0.5 * abs(u - 0.5))
+        top = h * (1 - 1.6 * abs(u - 0.5)) * rng.uniform(0.55, 1)
+        puffs.append((x + u * w, y - max(r * 0.6, top - r * 0.4), r))
+    puffs.sort(key=lambda p: p[1])  # higher puffs first, lower ones overlap them
+    body = "".join(f'<circle cx="{cx:.0f}" cy="{cy:.0f}" r="{r:.0f}"/>' for cx, cy, r in puffs)
+    # a strip of horizon colour hides the flat bottom of clouds that sit on the horizon
+    fade = (f'<rect x="{x - w * 0.05:.0f}" y="{y - 4:.0f}" width="{w * 1.1:.0f}" height="30" fill="url(#cloudBase)"/>'
+            if base else "")
+    return f'<g fill="url(#puff)">{body}</g>{fade}'
+
+
+def build_seishun(name: str, lines: list[str], tags: list[str], theme: str, seed: int) -> str:
+    """Summer youth: towering clouds, a contrail across the sky and a paper plane over a school rooftop."""
+    W, H = 900, 290
+    rng = random.Random(seed)
+    sky, ink, accent = {
+        "aurora": (("#1f6fd6", "#62bdf6", "#dff5ff"), "#1b57b0", "#ff7eb3"),
+        "sunset": (("#4a6fd0", "#ffad87", "#ffe6b8"), "#c8456b", "#ffcf4d"),
+        "ocean": (("#0b57bd", "#36a3f2", "#c3efff"), "#0a468f", "#4dffd2"),
+    }.get(theme, (("#1f6fd6", "#62bdf6", "#dff5ff"), "#1b57b0", "#ff7eb3"))
+    sun_x, sun_y = W - 150, 46
+    horizon = H - 74
+
+    # clouds: a towering cumulus on each side, plus small ones drifting across
+    tower = (f'<g class="drift" style="animation-duration:34s">{_cloud(rng, 10, horizon + 10, 215, 160, 22)}</g>'
+             f'<g class="drift" style="animation-duration:41s;animation-direction:alternate-reverse">'
+             f'{_cloud(rng, W - 270, horizon + 10, 240, 115, 20)}</g>')
+    small = []
+    for i in range(4):
+        dur = rng.uniform(55, 90)
+        small.append(
+            f'<g class="pass" style="animation-duration:{dur:.0f}s;animation-delay:-{rng.uniform(0, dur):.0f}s">'
+            f'{_cloud(rng, W, rng.uniform(40, 120), rng.uniform(70, 130), rng.uniform(20, 36), 7, base=False)}</g>'
+        )
+
+    rays = "".join(
+        f'<path d="M0 0 L{math.cos(a - 0.05) * 420:.0f} {math.sin(a - 0.05) * 420:.0f} '
+        f'L{math.cos(a + 0.05) * 420:.0f} {math.sin(a + 0.05) * 420:.0f}Z"/>'
+        for a in (k * 2 * math.pi / 14 for k in range(14))
+    )
+    flares = "".join(
+        f'<circle cx="{sun_x - (sun_x - 260) * t:.0f}" cy="{sun_y + (190 - sun_y) * t:.0f}" r="{r}" '
+        f'class="flare" style="animation-delay:-{t * 3:.1f}s" fill="{col}"/>'
+        for t, r, col in [(.25, 10, "#fff"), (.45, 22, accent), (.62, 7, "#fff"), (.8, 34, "#bfe6ff"), (1, 14, accent)]
+    )
+
+    contrail = f"M-20 150 C{W * .3:.0f} 120 {W * .55:.0f} 70 {W + 30} 34"
+    cyc_jet = 16.0
+    paper = ("M-30 220 C150 210 300 190 380 150 C440 120 470 66 430 56 C390 46 372 96 412 116 "
+             f"C480 150 650 128 {W + 40} 70")
+    cyc_pp = 11.0
+
+    fence_top = H - 64
+    posts = "".join(f'<rect x="{x}" y="{fence_top - 6}" width="6" height="{H - fence_top + 6}" rx="2"/>'
+                    for x in range(18, W, 128))
+    sparkles = "".join(
+        f'<path d="M0 -7 L1.6 -1.6 L7 0 L1.6 1.6 L0 7 L-1.6 1.6 L-7 0 L-1.6 -1.6Z" class="spark" '
+        f'transform="translate({rng.uniform(40, W - 40):.0f} {rng.uniform(20, horizon - 20):.0f}) scale({rng.uniform(.5, 1.1):.2f})" '
+        f'style="animation-duration:{rng.uniform(2, 4):.1f}s;animation-delay:-{rng.uniform(0, 4):.1f}s"/>'
+        for _ in range(14)
+    )
+    wind = "".join(
+        f'<path d="M0 0 q40 -10 80 0 t80 0" class="wind" transform="translate({rng.uniform(-100, W - 200):.0f} '
+        f'{rng.uniform(60, horizon - 10):.0f})" style="animation-duration:{rng.uniform(4, 7):.1f}s;'
+        f'animation-delay:-{rng.uniform(0, 6):.1f}s"/>' for _ in range(5)
+    )
+
+    name_fs = min(56, 560 / max(1, len(name)) / 0.58)
+    sub = esc(lines[0] if lines else "")
+    sub_w = text_width(lines[0] if lines else "", 15) * 0.9 + 36
+    cx, ty = W / 2 + 10, 130
+
+    return f"""{svg_open(W, H, name)}
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{sky[0]}"/><stop offset=".6" stop-color="{sky[1]}"/><stop offset="1" stop-color="{sky[2]}"/>
+    </linearGradient>
+    <radialGradient id="puff" cx="40%" cy="30%" r="75%">
+      <stop offset="0" stop-color="#fff"/><stop offset=".6" stop-color="#f7fbff"/><stop offset="1" stop-color="#bcd4ef"/>
+    </radialGradient>
+    <linearGradient id="cloudBase" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="{sky[2]}" stop-opacity="0"/><stop offset=".3" stop-color="{sky[2]}"/><stop offset="1" stop-color="{sky[2]}"/>
+    </linearGradient>
+    <radialGradient id="sun">
+      <stop offset="0" stop-color="#fff"/><stop offset=".18" stop-color="#fffbe8"/><stop offset=".45" stop-color="#fff3c4" stop-opacity=".45"/>
+      <stop offset="1" stop-color="#fff3c4" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="rayFade">
+      <stop offset="0" stop-color="#fff" stop-opacity=".5"/><stop offset="1" stop-color="#fff" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="leak" cx="85%" cy="5%" r="70%">
+      <stop offset="0" stop-color="#fff6d8" stop-opacity=".55"/><stop offset="1" stop-color="#fff6d8" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="mesh" width="14" height="14" patternUnits="userSpaceOnUse">
+      <path d="M0 7 L7 0 L14 7 L7 14Z" fill="none" stroke="#2e4664" stroke-width="1.3" opacity=".75"/>
+    </pattern>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fa3b8"/><stop offset="1" stop-color="#5c7189"/>
+    </linearGradient>
+    <clipPath id="frame"><rect width="{W}" height="{H}" rx="16"/></clipPath>
+  </defs>
+  <style>
+    .rays   {{ transform-origin: {sun_x}px {sun_y}px; animation: spin 60s linear infinite; }}
+    @keyframes spin {{ to {{ transform: rotate(360deg); }} }}
+    .flare  {{ opacity: .22; animation: flare 3s ease-in-out infinite alternate; }}
+    @keyframes flare {{ to {{ opacity: .06; }} }}
+    .drift  {{ animation: drift ease-in-out infinite alternate; }}
+    @keyframes drift {{ from {{ transform: translateX(-14px); }} to {{ transform: translateX(16px); }} }}
+    .pass   {{ animation: pass linear infinite; }}
+    @keyframes pass {{ from {{ transform: translateX(80px); }} to {{ transform: translateX(-{W + 260}px); }} }}
+    .trail  {{ fill: none; stroke: #fff; stroke-linecap: round; stroke-dasharray: 100 100; animation: trail {cyc_jet}s linear infinite; }}
+    @keyframes trail {{ 0% {{ stroke-dashoffset: 100; opacity: .95; stroke-width: 2; }} 45% {{ stroke-dashoffset: 0; opacity: .9; stroke-width: 2.6; }}
+                       90% {{ opacity: 0; stroke-width: 9; stroke-dashoffset: 0; }} 100% {{ opacity: 0; stroke-dashoffset: 0; }} }}
+    .ptrail {{ fill: none; stroke: #fff; stroke-width: 1.6; stroke-dasharray: 100 100; animation: ptrail {cyc_pp}s linear infinite; }}
+    @keyframes ptrail {{ 0% {{ stroke-dashoffset: 100; opacity: .7; }} 55% {{ stroke-dashoffset: 0; opacity: .6; }}
+                        80%, 100% {{ stroke-dashoffset: 0; opacity: 0; }} }}
+    .spark  {{ fill: #fff; transform-box: fill-box; transform-origin: center; animation: spark ease-in-out infinite; }}
+    @keyframes spark {{ 0%, 100% {{ opacity: 0; scale: .3; }} 50% {{ opacity: .95; scale: 1; }} }}
+    .wind   {{ fill: none; stroke: #fff; stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 40 200; animation: wind linear infinite; }}
+    @keyframes wind {{ from {{ stroke-dashoffset: 40; opacity: .8; }} to {{ stroke-dashoffset: -170; opacity: 0; }} }}
+    .name   {{ font: italic 900 {name_fs:.1f}px {SANS}; letter-spacing: 1px; paint-order: stroke; stroke-linejoin: round;
+              transform-box: fill-box; transform-origin: center; animation: pop 1.1s cubic-bezier(.2, 1.6, .4, 1) both; }}
+    .front  {{ fill: #fff; stroke: {ink}; stroke-width: 7; }}
+    .shadow {{ fill: {accent}; stroke: {accent}; stroke-width: 7; animation-delay: .08s; }}
+    @keyframes pop {{ from {{ opacity: 0; transform: scale(.4) rotate(-6deg); }} }}
+    .ribbon {{ animation: slide .8s .7s cubic-bezier(.2, 1.3, .4, 1) both; }}
+    @keyframes slide {{ from {{ opacity: 0; transform: translateX(-40px); }} }}
+    .sub    {{ font: 700 15px {SANS}; fill: {ink}; letter-spacing: 1.5px; }}
+    .badge  {{ font: 800 15px 'Noto Sans JP', 'Hiragino Sans', 'Yu Gothic', sans-serif; fill: #fff; }}
+    .bob    {{ animation: bob 3s ease-in-out infinite alternate; }}
+    @keyframes bob {{ to {{ transform: translateY(-5px); }} }}
+    {reduced(".trail, .ptrail { opacity: 0; }")}
+  </style>
+  <g clip-path="url(#frame)">
+    <rect width="{W}" height="{H}" fill="url(#sky)"/>
+    <g class="rays" fill="url(#rayFade)" opacity=".5"><g transform="translate({sun_x} {sun_y})">{rays}</g></g>
+    <circle cx="{sun_x}" cy="{sun_y}" r="120" fill="url(#sun)"/>
+    {"".join(small)}
+    <path d="{contrail}" pathLength="100" class="trail"/>
+    <g><animateMotion dur="{cyc_jet}s" repeatCount="indefinite" path="{contrail}" rotate="auto"
+        keyPoints="0;1;1" keyTimes="0;.45;1" calcMode="linear"/>
+      <animate attributeName="opacity" dur="{cyc_jet}s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;.45" values="1;0"/>
+      <path d="M4 0 L-6 -1.4 L-9 -6 L-11 -6 L-9 -1.3 L-14 -1 L-15 -3 L-16.5 -3 L-16 0 L-16.5 3 L-15 3 L-14 1 L-9 1.3 L-11 6 L-9 6 L-6 1.4Z" fill="#fff"/>
+    </g>
+    {tower}
+    {wind}
+    {sparkles}
+    {flares}
+    <rect width="{W}" height="{H}" fill="url(#leak)" class="flare" style="animation-duration:5s"/>
+
+    <path d="{paper}" pathLength="100" class="ptrail"/>
+    <g><animateMotion dur="{cyc_pp}s" repeatCount="indefinite" path="{paper}" rotate="auto"
+        keyPoints="0;1;1" keyTimes="0;.55;1" calcMode="spline" keySplines=".3 0 .7 1;0 0 1 1"/>
+      <path d="M10 0 L-14 -9 L-8 0Z" fill="#fff"/><path d="M10 0 L-14 9 L-8 0Z" fill="#dbe7f5"/>
+      <path d="M10 0 L-8 0 L-11 3Z" fill="#b9cbe3"/>
+    </g>
+
+    <g>
+      <g class="bob"><circle cx="{cx - text_width(name, name_fs) * .5 - 34:.0f}" cy="{ty - name_fs * .35:.0f}" r="25" fill="{accent}"/>
+        <text x="{cx - text_width(name, name_fs) * .5 - 34:.0f}" y="{ty - name_fs * .35 - 3:.0f}" text-anchor="middle" class="badge">青</text>
+        <text x="{cx - text_width(name, name_fs) * .5 - 34:.0f}" y="{ty - name_fs * .35 + 13:.0f}" text-anchor="middle" class="badge">春</text></g>
+      <text x="{cx + 4}" y="{ty + 4}" text-anchor="middle" class="name shadow">{esc(name)}</text>
+      <text x="{cx}" y="{ty}" text-anchor="middle" class="name front">{esc(name)}</text>
+      <g class="ribbon">
+        <rect x="{cx - sub_w / 2:.0f}" y="{ty + 18}" width="{sub_w:.0f}" height="28" rx="14" fill="#fff" opacity=".92"/>
+        <text x="{cx}" y="{ty + 37}" text-anchor="middle" class="sub">{sub}</text>
+      </g>
+    </g>
+
+    <rect y="{fence_top}" width="{W}" height="{H - fence_top}" fill="url(#mesh)"/>
+    <rect y="{fence_top - 6}" width="{W}" height="5" rx="2" fill="#2e4664"/>
+    <g fill="#2e4664">{posts}</g>
+    <rect y="{H - 14}" width="{W}" height="14" fill="url(#floor)"/>
+    <rect y="{H - 14}" width="{W}" height="2" fill="#fff" opacity=".4"/>
+  </g>
+</svg>
+"""
+
+
 STYLES = {
     "terminal": build_terminal,
     "borealis": build_borealis,
@@ -1134,4 +1321,5 @@ STYLES = {
     "warp": build_warp,
     "equalizer": build_equalizer,
     "sakura": build_sakura,
+    "seishun": build_seishun,
 }

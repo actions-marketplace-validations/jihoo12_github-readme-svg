@@ -1,0 +1,60 @@
+name: GitHub README SVG Generator
+description: Generate animated SVG banners and contribution calendars for GitHub READMEs with Python.
+author: jihoo12
+branding:
+  icon: image
+  color: purple
+inputs:
+  style:
+    description: 'SVG style, or all to generate every banner (and contribution styles when user is set).'
+    default: banner
+  name:
+    description: Large banner title.
+    default: "Hi, I'm Jihoo"
+  lines:
+    description: Subtitle lines, one per line.
+  tags:
+    description: Tech stack tags, one per line.
+  theme:
+    description: 'Color theme: aurora, sunset, or ocean.'
+    default: aurora
+  seed:
+    description: Random seed for reproducible SVGs.
+    default: '42'
+  user:
+    description: GitHub username, required for contribution styles.
+  palette:
+    description: 'Contribution palette: green, halloween, ice, or neon.'
+    default: green
+  contrib-html:
+    description: Saved contribution HTML path relative to the workspace, for offline generation.
+  output-dir:
+    description: Output directory relative to the workspace (also supports absolute paths).
+    default: assets
+  out:
+    description: Custom output file path for a single style; overrides output-dir.
+outputs:
+  files:
+    description: JSON array of absolute paths of generated SVG files.
+    value: ${{ steps.generate.outputs.files }}
+runs:
+  using: composite
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+    - id: generate
+      shell: bash
+      env:
+        SVG_STYLE: ${{ inputs.style }}
+        SVG_NAME: ${{ inputs.name }}
+        SVG_LINES: ${{ inputs.lines }}
+        SVG_TAGS: ${{ inputs.tags }}
+        SVG_THEME: ${{ inputs.theme }}
+        SVG_SEED: ${{ inputs.seed }}
+        SVG_USER: ${{ inputs.user }}
+        SVG_PALETTE: ${{ inputs.palette }}
+        SVG_CONTRIB_HTML: ${{ inputs.contrib-html }}
+        SVG_OUTPUT_DIR: ${{ inputs.output-dir }}
+        SVG_OUT: ${{ inputs.out }}
+      run: python "$GITHUB_ACTION_PATH/action_runner.py"

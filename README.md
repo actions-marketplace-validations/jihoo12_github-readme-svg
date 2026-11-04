@@ -10,6 +10,83 @@ A generator for **animated SVG banners** to put in your GitHub profile or reposi
 No JavaScript: it uses only CSS animations and SMIL, so the banners play as-is on GitHub.
 CSS-driven motion stops under `prefers-reduced-motion` (SMIL animations, which browsers cannot pause from CSS, keep playing).
 
+## GitHub Action / Marketplace
+
+Use this action in your own repository without installing Nix or Python dependencies.
+Save the workflow below as `.github/workflows/readme-svg.yml` and add
+`![Banner](assets/synthwave.svg)` to your README. The commit step requires permission
+to push to the target branch; branch protection rules still apply.
+
+> `@v1` becomes available after the first release and major-version tag are published.
+> Before then, use a commit SHA containing `action.yml` to try the action.
+
+```yaml
+name: Update README banner
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: readme-svg
+  cancel-in-progress: false
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jihoo12/github-readme-svg@v1
+        id: svg
+        with:
+          style: synthwave
+          name: Hi, I'm Jihoo
+          lines: |
+            I build things with Python
+            Welcome to my GitHub!
+          tags: |
+            Python
+            Rust
+          output-dir: assets
+      - name: Commit generated SVG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/synthwave.svg
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update README SVG"
+            git push
+          fi
+```
+
+For a contribution graph, set `style: contrib-city`, `user: ${{ github.repository_owner }}`,
+and optionally `palette: neon`; update the commit path to `assets/contrib-city.svg`.
+Use `style: all` to generate all 17 banner styles, plus the four contribution styles
+when `user` is supplied, and stage the generated files you want to publish.
+
+| Input | Default | Description |
+|---|---|---|
+| `style` | `banner` | Any style listed below, or `all` |
+| `name` | `Hi, I'm Jihoo` | Banner title |
+| `lines` | CLI sample lines | Subtitles, one per line |
+| `tags` | CLI sample tags | Tags, one per line |
+| `theme` | `aurora` | `aurora`, `sunset`, `ocean` |
+| `seed` | `42` | Integer random seed |
+| `user` | empty | Required for contribution styles |
+| `palette` | `green` | `green`, `halloween`, `ice`, `neon` |
+| `contrib-html` | empty | Saved contribution HTML file for offline generation |
+| `output-dir` | `assets` | Directory for generated SVGs |
+| `out` | empty | Single SVG path; overrides `output-dir`, incompatible with `all` |
+
+Paths are relative to the checked-out repository; absolute paths also work.
+The `files` output is a JSON array of absolute generated file paths.
+Supports Linux, macOS, and Windows runners with Bash and `actions/setup-python` support.
+The action generates files; committing them is controlled by your workflow.
+No GitHub token is needed for public contribution data.
+
+Maintainers: see [Marketplace publishing instructions](MARKETPLACE.md).
+
+
 ## Styles
 
 ### `synthwave`
@@ -155,7 +232,7 @@ nix run . -- --style contrib-heartbeat --user <your-github-username>
 
 ### Auto-update with GitHub Actions
 
-`.github/workflows/contrib.yml` regenerates the contrib SVGs every day at 00:00 UTC using Nix, and commits them if they changed.
+`.github/workflows/contrib.yml` regenerates the contrib SVGs using Nix when the configured generator files change on `main`, and commits them if they changed. This repository does not run scheduled SVG updates.
 It uses the repository owner as the username. You can also run it by hand from the **Actions** tab (**Run workflow**).
 It needs **Settings → Actions → General → Workflow permissions → Read and write**.
 

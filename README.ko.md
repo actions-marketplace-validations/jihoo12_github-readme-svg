@@ -10,6 +10,84 @@ GitHub 프로필/저장소 README에 넣을 **애니메이션 SVG 배너** 생�
 JavaScript 없이 CSS 애니메이션과 SMIL만 써서 GitHub에서 그대로 재생됩니다.
 CSS로 움직이는 부분은 `prefers-reduced-motion` 설정에서 멈춥니다 (SMIL 애니메이션은 CSS로 멈출 수 없어 계속 재생됩니다).
 
+## GitHub Action / Marketplace
+
+Nix나 별도 Python 패키지 설치 없이 다른 저장소의 워크플로에서 사용할 수 있습니다.
+아래 내용을 `.github/workflows/readme-svg.yml`로 저장하고 README에
+`![Banner](assets/synthwave.svg)`를 추가하세요. 커밋 단계에는 대상 브랜치에 대한
+푸시 권한이 필요하며, 브랜치 보호 규칙도 적용됩니다.
+
+> `@v1`은 첫 릴리스와 버전 태그를 게시한 후 사용할 수 있습니다.
+> 게시 전에는 `action.yml`이 포함된 커밋 SHA를 지정하여 시험할 수 있습니다.
+
+```yaml
+name: Update README banner
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+permissions:
+  contents: write
+concurrency:
+  group: readme-svg
+  cancel-in-progress: false
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jihoo12/github-readme-svg@v1
+        id: svg
+        with:
+          style: synthwave
+          name: Hi, I'm Jihoo
+          lines: |
+            I build things with Python
+            Welcome to my GitHub!
+          tags: |
+            Python
+            Rust
+          output-dir: assets
+      - name: Commit generated SVG
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/synthwave.svg
+          if ! git diff --cached --quiet; then
+            git commit -m "chore: update README SVG"
+            git push
+          fi
+```
+
+기여 그래프는 `style: contrib-city`, `user: ${{ github.repository_owner }}`를
+지정하세요. `palette: neon`처럼 색상을 선택할 수 있습니다.
+커밋 경로도 `assets/contrib-city.svg`로 변경해야 합니다.
+`style: all`은 배너 17종을 생성하며, `user`를 지정하면 기여 그래프 4종도 생성합니다.
+이때 커밋 단계에서 게시할 생성 파일들을 선택하세요.
+
+| 입력 | 기본값 | 설명 |
+|---|---|---|
+| `style` | `banner` | 아래 스타일 이름 또는 `all` |
+| `name` | `Hi, I'm Jihoo` | 큰 제목 |
+| `lines` | CLI 예제 문구 | 한 줄에 하나씩 입력하는 부제목 |
+| `tags` | CLI 예제 태그 | 한 줄에 하나씩 입력하는 기술 태그 |
+| `theme` | `aurora` | `aurora`, `sunset`, `ocean` |
+| `seed` | `42` | 난수 시드 정수 |
+| `user` | 없음 | 기여 그래프에 필요한 GitHub 사용자 이름 |
+| `palette` | `green` | `green`, `halloween`, `ice`, `neon` |
+| `contrib-html` | 없음 | 오프라인 생성에 사용할 기여 HTML 파일 |
+| `output-dir` | `assets` | SVG 출력 디렉터리 |
+| `out` | 없음 | 단일 SVG 파일 경로. `output-dir`보다 우선하며 `all`과 함께 사용 불가 |
+
+경로는 체크아웃된 저장소 기준이며 절대 경로도 지원합니다.
+`files` 출력은 생성된 SVG 절대 경로의 JSON 배열입니다.
+Bash 및 `actions/setup-python`을 지원하는 Linux, macOS, Windows 러너에서 사용할 수 있습니다.
+Action은 파일을 생성하며, 커밋 여부는 호출하는 워크플로가 결정합니다.
+공개 기여 데이터를 가져오는 데 GitHub 토큰은 필요하지 않습니다.
+
+관리자용 [Marketplace 게시 절차](MARKETPLACE.md)를 참고하세요.
+
+
 ## 스타일
 
 ### `synthwave`
@@ -151,7 +229,7 @@ nix run . -- --style contrib-heartbeat --user <GitHub-사용자-이름>
 
 ### GitHub Actions로 자동 갱신
 
-`.github/workflows/contrib.yml`이 매일 00:00 UTC에 Nix로 contrib SVG들을 다시 만들고, 바뀐 게 있으면 커밋합니다.
+`.github/workflows/contrib.yml`은 `main`에서 지정된 생성기 파일이 변경되면 Nix로 contrib SVG들을 다시 만들고, 바뀐 게 있으면 커밋합니다. 이 저장소에서는 정기 갱신을 실행하지 않습니다.
 사용자 이름은 저장소 소유자로 정해집니다. **Actions** 탭에서 **Run workflow**로 직접 실행할 수도 있습니다.
 **Settings → Actions → General → Workflow permissions → Read and write** 설정이 필요합니다.
 

@@ -1,8 +1,6 @@
 name: Update contribution SVGs
 
 on:
-  schedule:
-    - cron: "0 0 * * *"   # daily at 00:00 UTC
   workflow_dispatch:
   push:
     branches: [main]

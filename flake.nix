@@ -12,7 +12,7 @@
         default = pkgs.writeShellApplication {
           name = "readme-svg";
           runtimeInputs = [ pkgs.python3 ];
-          text = ''exec python3 ${./generate.py} "$@"'';
+          text = ''exec python3 ${./.}/generate.py "$@"'';
         };
       });
 
@@ -24,7 +24,7 @@
       });
 
       devShells = forAll (pkgs: {
-        # librsvg: rsvg-convert로 PNG 미리보기 확인용
+        # librsvg: rsvg-convert for PNG previews
         default = pkgs.mkShell { packages = [ pkgs.python3 pkgs.librsvg ]; };
       });
     };

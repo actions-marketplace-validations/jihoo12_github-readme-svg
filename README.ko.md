@@ -32,6 +32,34 @@ JavaScript 없이 CSS 애니메이션과 SMIL만 써서 GitHub에서 그대로 �
 
 <img src="assets/banner.svg" width="100%"/>
 
+## Contribution graph 스타일
+
+실제 GitHub contribution 기록으로 만듭니다. 데이터는 공개 페이지 `github.com/users/<user>/contributions`에서 가져오므로 토큰이 필요 없습니다.
+두 스타일 모두 총 기여 수, 현재·최장 연속 기록, 최고 기록일을 숫자가 올라가는 애니메이션으로 보여줍니다.
+
+### `contrib-grid`
+익숙한 잔디 그리드입니다. 칸들이 대각선 물결로 튀어나온 뒤, 스캔 빔이 지나가며 빛의 잔상을 남깁니다.
+
+<img src="assets/contrib-grid.svg" width="100%"/>
+
+### `contrib-city`
+1년을 3D 도시로 보여줍니다. 하루가 건물 하나이고 높이는 그날 기여 수를 따르며, 도시가 물결처럼 솟아오릅니다.
+
+<img src="assets/contrib-city.svg" width="100%"/>
+
+팔레트: `--palette green | halloween | ice | neon`
+
+```sh
+nix run . -- --style contrib-grid --user <GitHub-사용자-이름>
+nix run . -- --style contrib-city --user <GitHub-사용자-이름> --palette neon
+```
+
+### GitHub Actions로 자동 갱신
+
+`.github/workflows/contrib.yml`이 매일 00:00 UTC에 Nix로 두 SVG를 다시 만들고, 바뀐 게 있으면 커밋합니다.
+사용자 이름은 저장소 소유자로 정해집니다. **Actions** 탭에서 **Run workflow**로 직접 실행할 수도 있습니다.
+**Settings → Actions → General → Workflow permissions → Read and write** 설정이 필요합니다.
+
 ## 사용법 (Nix)
 
 ```sh
@@ -53,7 +81,10 @@ python3 generate.py --help
 
 | 옵션 | 설명 | 기본값 |
 |---|---|---|
-| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `all` | `banner` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `contrib-grid` · `contrib-city` · `all` | `banner` |
+| `--user` | `contrib-*` 스타일용 GitHub 사용자 이름 (`all`과 함께 쓰면 contrib 스타일도 생성) | — |
+| `--palette` | `green` · `halloween` · `ice` · `neon` (`contrib-*`) | `green` |
+| `--contrib-html` | 가져오는 대신 저장해 둔 contributions HTML 사용 | — |
 | `--name` | 큰 타이틀 | `Hi, I'm Jihoo` |
 | `--line` | 부제목 문구, 여러 번 지정 가능 (`banner`/`matrix`는 모두 타이핑, `synthwave`/`orbit`은 첫 줄만 사용) | 예시 문구 3개 |
 | `--tag` | `orbit` 스타일에서 궤도를 도는 태그, 여러 번 지정 가능 | Python, Nix, Linux, … |

@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
-"""GitHub README용 애니메이션 SVG 배너 생성기.
+"""Animated SVG banner generator for GitHub READMEs.
 
-외부 의존성 없이 표준 라이브러리만 사용합니다.
-GitHub는 README의 SVG를 <img>로 렌더링하므로 JavaScript는 동작하지 않지만,
-CSS 애니메이션과 SMIL(<animate>)은 동작합니다. 이 스크립트는 그 두 가지만 사용합니다.
+Uses only the Python standard library.
+GitHub renders README SVGs through <img>, so JavaScript does not run,
+but CSS animations and SMIL (<animate>) do. This script uses only those two.
 
-예시:
-    python3 generate.py --name "Jihoo" \
-        --line "Hello, World! 👋" --line "I build things with Nix & Python" \
-        --out banner.svg
+Examples:
+    python3 generate.py --style synthwave --name "Jihoo" --line "I build things with Nix & Python"
+    python3 generate.py --style contrib-city --user jihoo12 --palette neon
+    python3 generate.py --style all --user jihoo12
 """
 
 from __future__ import annotations
@@ -18,10 +18,12 @@ import html
 import random
 from pathlib import Path
 
+import contrib
+
 WIDTH = 900
 HEIGHT = 260
 FONT_SIZE = 22
-CHAR_W = FONT_SIZE * 0.6  # monospace 글자 폭 근사치
+CHAR_W = FONT_SIZE * 0.6  # approximate monospace glyph width
 
 THEMES = {
     "aurora": ("#0d1117", ["#7f5af0", "#2cb67d", "#3da9fc"]),
@@ -35,7 +37,7 @@ def esc(s: str) -> str:
 
 
 def text_width(s: str) -> float:
-    # 한글/이모지 등 전각 문자는 대략 2칸으로 계산
+    # count wide characters (Hangul, emoji, ...) as roughly two cells
     return sum(CHAR_W * (2 if ord(c) > 0x1100 else 1) for c in s)
 
 
@@ -53,7 +55,7 @@ def stars(n: int, rng: random.Random, w: float = WIDTH, h: float = HEIGHT * 0.75
 
 
 def wave_path(amp: float, base: float, wavelength: float) -> str:
-    # 화면 폭의 2배 길이 파형 → translateX(-50%)로 끊김 없이 반복
+    # wave twice the canvas width, so translating by one width loops seamlessly
     d = [f"M0 {base}"]
     x = 0.0
     while x < WIDTH * 2:
@@ -64,7 +66,7 @@ def wave_path(amp: float, base: float, wavelength: float) -> str:
 
 
 def typing_lines(lines: list[str], y: float, type_speed: float, hold: float) -> tuple[str, float]:
-    """SMIL로 여러 줄을 '타이핑 → 잠시 멈춤 → 지우기' 순서로 반복."""
+    """Loop several lines with SMIL: type -> pause -> erase."""
     slots = []
     for line in lines:
         n = len(line)
@@ -80,7 +82,7 @@ def typing_lines(lines: list[str], y: float, type_speed: float, hold: float) -> 
         full = widths[-1]
         x0 = (WIDTH - full) / 2
 
-        # (시간, 폭) 키프레임: 타이핑 → 유지 → 지우기 → 숨김
+        # (time, width) keyframes: type -> hold -> erase -> hidden
         frames: list[tuple[float, float]] = [(0.0, 0.0)]
         if start > 0:
             frames.append((start, 0.0))
@@ -92,7 +94,7 @@ def typing_lines(lines: list[str], y: float, type_speed: float, hold: float) -> 
             frames.append((end_hold + (len(line) - i) * (t_erase / len(line)), widths[i]))
         frames.append((total, 0.0))
 
-        # keyTimes는 단조 증가 + 0으로 시작 + 1로 끝나야 함
+        # keyTimes must increase monotonically, start at 0 and end at 1
         kt, vals, last = [], [], -1.0
         for t, w in frames:
             k = min(max(t / total, 0.0), 1.0)
@@ -105,8 +107,8 @@ def typing_lines(lines: list[str], y: float, type_speed: float, hold: float) -> 
         key_times = ";".join(f"{k:.6f}" for k in kt)
         w_vals = ";".join(f"{w:.1f}" for w in vals)
         cur_vals = ";".join(f"{x0 + w:.1f}" for w in vals)
-        # discrete 모드에서는 각 값이 다음 keyTime까지 유지되므로,
-        # 지우기가 끝나는 프레임(폭 0)에서 바로 숨겨야 커서가 남지 않음
+        # in discrete mode each value holds until the next keyTime, so the cursor must be
+        # hidden on the frame where erasing ends (width 0), or it lingers
         vis = ";".join("1" if (start <= t < end_hold + t_erase) else "0" for t, _ in frames)
 
         parts.append(f"""
@@ -183,12 +185,12 @@ MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, 'DejaVu Sans Mono', monos
 
 
 def build_synthwave(name: str, lines: list[str], tags: list[str], theme: str, seed: int) -> str:
-    """레트로 신스웨이브: 네온 선이 그려지는 타이틀 + 줄무늬 태양 + 다가오는 원근 그리드."""
+    """Retro synthwave: self-drawing neon title + striped sun + approaching perspective grid."""
     W, H, horizon = 900, 300, 200
     rng = random.Random(seed)
     cx = W / 2
 
-    # 원근 그리드: 소실점에서 퍼지는 세로선 + ease-in으로 내려오는 가로선
+    # perspective grid: verticals fanning from the vanishing point + ease-in horizontal rows
     verticals = "\n    ".join(
         f'<line x1="{cx}" y1="{horizon}" x2="{cx + i * 90}" y2="{H}"/>' for i in range(-16, 17)
     )
@@ -198,7 +200,7 @@ def build_synthwave(name: str, lines: list[str], tags: list[str], theme: str, se
         f'style="animation-delay:-{i * row_dur / n_rows:.2f}s"/>'
         for i in range(n_rows)
     )
-    # 태양 아랫부분 가로 줄무늬 (아래로 갈수록 두꺼워짐)
+    # horizontal stripes across the lower sun (thicker toward the bottom)
     stripes = "\n      ".join(
         f'<rect x="0" y="{horizon - 62 + i * 13 + i * i * 0.4:.1f}" width="{W}" height="{1.5 + i * 1.3:.1f}" fill="#000"/>'
         for i in range(6)
@@ -281,12 +283,12 @@ def build_synthwave(name: str, lines: list[str], tags: list[str], theme: str, se
 """
 
 
-# 카타카나는 일본어 글꼴이 없는 환경에서 네모(□)로 깨지므로 모든 고정폭 글꼴에 있는 문자만 사용
+# katakana renders as boxes without a Japanese font, so use only characters every monospace font has
 MATRIX_CHARS = "0123456789ABCDEFXZ<>{}[]()=+*#$%&@/\\|;:"
 
 
 def build_matrix(name: str, lines: list[str], tags: list[str], theme: str, seed: int) -> str:
-    """매트릭스 코드 비 + 글리치 타이틀 + 타이핑 문구."""
+    """Matrix code rain + glitch title + typewriter subtitle."""
     W, H = WIDTH, HEIGHT
     rng = random.Random(seed)
 
@@ -297,7 +299,7 @@ def build_matrix(name: str, lines: list[str], tags: list[str], theme: str, seed:
         n = rng.randint(10, 20)
         chars = "".join(rng.choice(MATRIX_CHARS) for _ in range(n))
         col_h = n * size * 1.1
-        dur = rng.uniform(3.5, 8) * (18 / size)  # 작은 글자 = 멀리 = 느리게
+        dur = rng.uniform(3.5, 8) * (18 / size)  # smaller glyphs = farther away = slower
         tspans = "".join(f'<tspan x="{x:.0f}" dy="{size * 1.1:.1f}">{esc(c)}</tspan>' for c in chars)
         cols.append(
             f'<text class="rain" font-size="{size}" opacity="{size / 18:.2f}" y="0" '
@@ -367,12 +369,12 @@ def build_matrix(name: str, lines: list[str], tags: list[str], theme: str, seed:
 
 
 def build_orbit(name: str, lines: list[str], tags: list[str], theme: str, seed: int) -> str:
-    """이름 주위를 기술 스택 태그가 3D 궤도처럼 도는 배너."""
+    """Banner with tech-stack tags orbiting the name on 3D-style orbits."""
     W, H = 900, 320
     bg, (c1, c2, c3) = THEMES[theme]
     rng = random.Random(seed)
     cx, cy = W / 2, H / 2
-    rings = [(255, 72, 16), (345, 102, 24), (425, 134, 34)]  # (rx, ry, 한 바퀴 시간)
+    rings = [(255, 72, 16), (345, 102, 24), (425, 134, 34)]  # (rx, ry, seconds per revolution)
 
     ring_svg, tag_svg = [], []
     for i, (rx, ry, _) in enumerate(rings):
@@ -384,13 +386,13 @@ def build_orbit(name: str, lines: list[str], tags: list[str], theme: str, seed: 
     per_ring = [tags[i::len(rings)] for i in range(len(rings))]
     for ri, ring_tags in enumerate(per_ring):
         rx, ry, dur = rings[ri]
-        # 오른쪽 끝에서 시작해 시계방향(앞쪽=아래쪽 먼저)으로 도는 타원 경로
+        # elliptical path starting at the right, going clockwise (front/bottom first)
         path = f"M{cx + rx},{cy} A{rx},{ry} 0 1,1 {cx - rx},{cy} A{rx},{ry} 0 1,1 {cx + rx},{cy}"
         for ti, tag in enumerate(ring_tags):
             offset = dur * ti / max(len(ring_tags), 1) + ri * 2.3
             w = text_width(tag) * (14 / FONT_SIZE) + 26
             col = colors[(ri + ti) % 3]
-            # 경로 진행 0→.25(앞)→.5→.75(뒤)→1 에 맞춰 크기/투명도로 원근감 표현
+            # scale/opacity follow path progress 0 -> .25 (front) -> .5 -> .75 (back) -> 1 for depth
             tag_svg.append(f"""
     <g>
       <animateMotion dur="{dur}s" begin="-{offset:.2f}s" repeatCount="indefinite" path="{path}"/>
@@ -463,26 +465,41 @@ STYLES = {
 
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--style", choices=[*STYLES, "all"], default="banner",
-                   help="banner | synthwave | matrix | orbit | all")
+    p.add_argument("--style", choices=[*STYLES, *contrib.STYLES, "all"], default="banner",
+                   help="banner | synthwave | matrix | orbit | contrib-grid | contrib-city | all")
     p.add_argument("--name", default="Hi, I'm Jihoo")
     p.add_argument("--line", action="append", dest="lines",
-                   help="문구 (여러 번 지정 가능; synthwave/orbit은 첫 줄만 사용)")
-    p.add_argument("--tag", action="append", dest="tags", help="orbit 스타일의 궤도 태그 (여러 번 지정 가능)")
+                   help="subtitle line, repeatable (synthwave/orbit use only the first)")
+    p.add_argument("--tag", action="append", dest="tags", help="tag orbiting in the orbit style, repeatable")
     p.add_argument("--theme", choices=THEMES, default="aurora")
-    p.add_argument("--seed", type=int, default=42, help="별/코드 비 배치용 랜덤 시드")
-    p.add_argument("--out", help="출력 경로 (기본값: assets/<style>.svg)")
+    p.add_argument("--seed", type=int, default=42, help="random seed for stars / code rain")
+    p.add_argument("--user", help="contrib-* styles: GitHub username")
+    p.add_argument("--palette", choices=contrib.PALETTES, default="green", help="contrib-* styles: color palette")
+    p.add_argument("--contrib-html", help="contrib-* styles: saved contributions HTML (offline use)")
+    p.add_argument("--out", help="output path (default: assets/<style>.svg)")
     a = p.parse_args()
 
     lines = a.lines or ["Welcome to my GitHub!", "I love building cool stuff", "Let's code together :)"]
     tags = a.tags or ["Python", "Nix", "Linux", "Git", "Rust", "TypeScript", "Docker", "Neovim", "Bash"]
-    styles = list(STYLES) if a.style == "all" else [a.style]
+    if a.style == "all":
+        styles = list(STYLES) + (list(contrib.STYLES) if a.user else [])
+    else:
+        styles = [a.style]
     if a.out and len(styles) > 1:
-        p.error("--out은 --style all과 함께 쓸 수 없습니다")
+        p.error("--out cannot be used with --style all")
+    needs_cal = any(s in contrib.STYLES for s in styles)
+    if needs_cal and not a.user:
+        p.error("contrib-* styles require --user")
+    cal = contrib.load(a.user, a.contrib_html) if needs_cal else None
+
     for style in styles:
         out = Path(a.out or f"assets/{style}.svg")
         out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(STYLES[style](a.name, lines, tags, a.theme, a.seed), encoding="utf-8")
+        if style in contrib.STYLES:
+            svg = contrib.STYLES[style](cal, a.palette)
+        else:
+            svg = STYLES[style](a.name, lines, tags, a.theme, a.seed)
+        out.write_text(svg, encoding="utf-8")
         print(f"wrote {out}")
 
 

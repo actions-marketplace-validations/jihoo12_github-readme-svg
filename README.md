@@ -32,6 +32,34 @@ A gradient title, a typewriter effect that types and erases several lines in tur
 
 <img src="assets/banner.svg" width="100%"/>
 
+## Contribution graph styles
+
+Built from your real GitHub contribution calendar, fetched from the public page `github.com/users/<user>/contributions` (no token needed).
+Both show total contributions, current and longest streak, and best day, with numbers that count up.
+
+### `contrib-grid`
+The familiar grid. Cells pop in on a diagonal wave, then a scanning beam sweeps across and leaves a fading trail of light.
+
+<img src="assets/contrib-grid.svg" width="100%"/>
+
+### `contrib-city`
+Your year as a 3D city. Each day is a building whose height follows its contribution count, and the city rises in a wave.
+
+<img src="assets/contrib-city.svg" width="100%"/>
+
+Palettes: `--palette green | halloween | ice | neon`
+
+```sh
+nix run . -- --style contrib-grid --user <your-github-username>
+nix run . -- --style contrib-city --user <your-github-username> --palette neon
+```
+
+### Auto-update with GitHub Actions
+
+`.github/workflows/contrib.yml` regenerates both SVGs every day at 00:00 UTC using Nix, and commits them if they changed.
+It uses the repository owner as the username. You can also run it by hand from the **Actions** tab (**Run workflow**).
+It needs **Settings → Actions → General → Workflow permissions → Read and write**.
+
 ## Usage (Nix)
 
 ```sh
@@ -53,7 +81,10 @@ python3 generate.py --help
 
 | Option | Description | Default |
 |---|---|---|
-| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `all` | `banner` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `contrib-grid` · `contrib-city` · `all` | `banner` |
+| `--user` | GitHub username for `contrib-*` (with `all`, also generates the contrib styles) | — |
+| `--palette` | `green` · `halloween` · `ice` · `neon` (`contrib-*`) | `green` |
+| `--contrib-html` | Use a saved contributions HTML page instead of fetching it | — |
 | `--name` | Large title | `Hi, I'm Jihoo` |
 | `--line` | Subtitle lines, repeatable (`banner`/`matrix` type all of them; `synthwave`/`orbit` use the first) | 3 sample lines |
 | `--tag` | Tags orbiting in the `orbit` style, repeatable | Python, Nix, Linux, … |

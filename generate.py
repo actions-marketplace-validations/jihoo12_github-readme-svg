@@ -19,6 +19,7 @@ from pathlib import Path
 
 import contrib
 import creative
+import spectacle
 from common import MONO, SANS, THEMES, esc
 from common import stars as _stars
 from common import text_width as _text_width
@@ -439,6 +440,7 @@ STYLES = {
     "matrix": build_matrix,
     "orbit": build_orbit,
     **creative.STYLES,
+    **spectacle.STYLES,
 }
 
 

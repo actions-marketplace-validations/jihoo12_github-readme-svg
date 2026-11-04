@@ -65,6 +65,42 @@ the bottom.
 
 <img src="assets/blueprint.svg" width="100%"/>
 
+### `terminal`
+A terminal window. `neofetch` is typed at the prompt, then a system-info card about you prints line by line:
+your handle's initial as pixel art, name, lines, stack and a colour strip, ending at a blinking cursor.
+
+<img src="assets/terminal.svg" width="100%"/>
+
+### `borealis`
+Northern lights over a mountain lake. Three aurora curtains ripple and shimmer with drifting rays, the stars
+twinkle, a meteor crosses now and then, and everything is mirrored in the rippling water.
+
+<img src="assets/borealis.svg" width="100%"/>
+
+### `hologram`
+A holographic ID card. A geodesic wireframe globe spins above a projector (front edges bright, back edges dim),
+wrapped in orbiting rings and a scan beam, with a glitchy flicker. Your name, first line and tags sit beside it.
+
+<img src="assets/hologram.svg" width="100%"/>
+
+### `circuit`
+A circuit board. Signal pulses race along copper traces into a chip that carries your name, and each pin
+lights up as a pulse arrives. Your tags are printed as silkscreen labels.
+
+<img src="assets/circuit.svg" width="100%"/>
+
+### `warp`
+A jump to hyperspace. Star streaks rush out of the centre, your name zooms in, holds, then flies past the
+viewer in a flash, inside a HUD frame that lists your tags as the destination.
+
+<img src="assets/warp.svg" width="100%"/>
+
+### `equalizer`
+A "now playing" card. A record spins out of the album sleeve, a spectrum equalizer bounces with a reflection,
+and the progress bar and clock really tick through a 4:00 track. Your name is the title, the first line the artist.
+
+<img src="assets/equalizer.svg" width="100%"/>
+
 ## Contribution graph styles
 
 Built from your real GitHub contribution calendar, fetched from the public page `github.com/users/<user>/contributions` (no token needed).
@@ -130,14 +166,14 @@ python3 generate.py --help
 
 | Option | Description | Default |
 |---|---|---|
-| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
 | `--user` | GitHub username for `contrib-*` (with `all`, also generates the contrib styles) | — |
 | `--palette` | `green` · `halloween` · `ice` · `neon` (`contrib-*`) | `green` |
 | `--contrib-html` | Use a saved contributions HTML page instead of fetching it | — |
 | `--name` | Large title | `Hi, I'm Jihoo` |
 | `--line` | Subtitle lines, repeatable (`banner`/`matrix`/`splitflap` use all of them; the others use the first) | 3 sample lines |
-| `--tag` | Tags, repeatable (`orbit` orbits them; `splitflap`/`blueprint` print them) | Python, Nix, Linux, … |
-| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope`) | `aurora` |
+| `--tag` | Tags, repeatable (`orbit` orbits them; `splitflap`/`blueprint`/`terminal`/`hologram`/`circuit`/`warp`/`equalizer` print them) | Python, Nix, Linux, … |
+| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope` and the six styles from `terminal` to `equalizer`) | `aurora` |
 | `--seed` | Random seed for stars / code rain | `42` |
 | `--out` | Output path (single style only) | `assets/<style>.svg` |
 

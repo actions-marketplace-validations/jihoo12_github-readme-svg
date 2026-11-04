@@ -63,6 +63,42 @@ CRT 오실로스코프입니다. 전자빔이 형광 선으로 이름을 한 획
 
 <img src="assets/blueprint.svg" width="100%"/>
 
+### `terminal`
+터미널 창입니다. 프롬프트에 `neofetch`가 입력되면 나에 대한 시스템 정보 카드가 한 줄씩 출력됩니다.
+핸들 첫 글자의 픽셀 아트, 이름, 문구, 스택, 색상 막대가 나오고 깜빡이는 커서로 끝납니다.
+
+<img src="assets/terminal.svg" width="100%"/>
+
+### `borealis`
+산속 호수 위의 오로라입니다. 세 겹의 오로라 커튼이 빛줄기와 함께 일렁이고, 별이 반짝이고, 가끔 유성이 지나갑니다.
+모든 것이 잔물결 치는 호수에 비칩니다.
+
+<img src="assets/borealis.svg" width="100%"/>
+
+### `hologram`
+홀로그램 ID 카드입니다. 프로젝터 위에서 지오데식 와이어프레임 구가 회전하고(앞쪽 모서리는 밝게, 뒤쪽은 흐리게),
+궤도 고리와 스캔 빔이 감싸며 가끔 지직거립니다. 옆에는 이름, 첫 번째 문구, 태그가 표시됩니다.
+
+<img src="assets/hologram.svg" width="100%"/>
+
+### `circuit`
+회로 기판입니다. 신호 펄스가 구리 배선을 따라 이름이 새겨진 칩으로 달려가고, 펄스가 도착할 때마다 핀이 빛납니다.
+태그는 실크스크린 라벨로 인쇄됩니다.
+
+<img src="assets/circuit.svg" width="100%"/>
+
+### `warp`
+초공간 점프입니다. 중앙에서 별빛 줄기가 쏟아져 나오고, 이름이 줌인해 머물다가 섬광과 함께 화면 밖으로 날아갑니다.
+HUD 프레임에는 태그가 목적지로 표시됩니다.
+
+<img src="assets/warp.svg" width="100%"/>
+
+### `equalizer`
+"Now playing" 카드입니다. 앨범 커버에서 레코드가 빠져나와 돌고, 스펙트럼 이퀄라이저가 반사와 함께 튀며,
+진행 바와 시계가 4:00짜리 곡을 실제로 흘러갑니다. 이름이 곡 제목, 첫 번째 문구가 아티스트입니다.
+
+<img src="assets/equalizer.svg" width="100%"/>
+
 ## Contribution graph 스타일
 
 실제 GitHub contribution 기록으로 만듭니다. 데이터는 공개 페이지 `github.com/users/<user>/contributions`에서 가져오므로 토큰이 필요 없습니다.
@@ -127,14 +163,14 @@ python3 generate.py --help
 
 | 옵션 | 설명 | 기본값 |
 |---|---|---|
-| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
+| `--style` | `banner` · `synthwave` · `matrix` · `orbit` · `splitflap` · `swarm` · `liquid` · `scope` · `blueprint` · `terminal` · `borealis` · `hologram` · `circuit` · `warp` · `equalizer` · `contrib-grid` · `contrib-city` · `contrib-galaxy` · `contrib-heartbeat` · `all` | `banner` |
 | `--user` | `contrib-*` 스타일용 GitHub 사용자 이름 (`all`과 함께 쓰면 contrib 스타일도 생성) | — |
 | `--palette` | `green` · `halloween` · `ice` · `neon` (`contrib-*`) | `green` |
 | `--contrib-html` | 가져오는 대신 저장해 둔 contributions HTML 사용 | — |
 | `--name` | 큰 타이틀 | `Hi, I'm Jihoo` |
 | `--line` | 부제목 문구, 여러 번 지정 가능 (`banner`/`matrix`/`splitflap`은 모두 사용, 나머지는 첫 줄만 사용) | 예시 문구 3개 |
-| `--tag` | 태그, 여러 번 지정 가능 (`orbit`은 궤도로 돌리고 `splitflap`/`blueprint`는 글자로 표시) | Python, Nix, Linux, … |
-| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope`) | `aurora` |
+| `--tag` | 태그, 여러 번 지정 가능 (`orbit`은 궤도로 돌리고 `splitflap`/`blueprint`/`terminal`/`hologram`/`circuit`/`warp`/`equalizer`는 글자로 표시) | Python, Nix, Linux, … |
+| `--theme` | `aurora` · `sunset` · `ocean` (`banner`, `orbit`, `splitflap`, `liquid`, `scope`, 그리고 `terminal`~`equalizer` 6종) | `aurora` |
 | `--seed` | 별/코드 비 배치용 랜덤 시드 | `42` |
 | `--out` | 출력 경로 (스타일 하나일 때만) | `assets/<style>.svg` |
 
